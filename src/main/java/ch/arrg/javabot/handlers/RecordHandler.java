@@ -28,7 +28,7 @@ public class RecordHandler implements CommandHandler {
 			String action = words[0];
 			if (allowedRecords.contains(action)) {
 				String value = words[1];
-				ctx.bot.getUserData(ctx.sender).setRecord(action, value);
+				ctx.getUserData(ctx.sender).setRecord(action, value);
 				ctx.reply("Okay I will remember.");
 			} else {
 				ctx.reply("This is now a known key, doot");

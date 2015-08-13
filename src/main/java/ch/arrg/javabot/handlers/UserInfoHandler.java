@@ -24,7 +24,7 @@ public class UserInfoHandler implements CommandHandler {
 			}
 
 			if (action.equals("records")) {
-				int keys = ctx.bot.getUserData(ctx.sender).countKeys();
+				int keys = ctx.getUserData(ctx.sender).countKeys();
 				reply = "I have " + keys + " records about you.";
 			}
 

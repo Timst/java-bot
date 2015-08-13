@@ -11,7 +11,7 @@ public class QuitHandler implements CommandHandler {
 
 		if ("+quit".equals(ctx.message) && UserDb.canonize(ctx.sender).equals("arrg")) {
 			ctx.reply("Thanks mr skeltal");
-			ctx.bot.quit();
+			ctx.quit();
 		}
 	}
 

@@ -21,7 +21,7 @@ public class TimeHandler implements CommandHandler {
 			String[] words = message.split("\\s+");
 			String zoneName = words[0];
 			if (zoneName.equals("")) {
-				String saved = ctx.bot.getUserData(ctx.sender).getRecord(TZ_RECORD);
+				String saved = ctx.getUserData(ctx.sender).getRecord(TZ_RECORD);
 				if (saved != null) {
 					zoneName = saved;
 				} else {

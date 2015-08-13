@@ -14,7 +14,7 @@ public class HelloHandler implements CommandHandler {
 
 		if (ctx.message.equalsIgnoreCase("Hello " + Const.BOT_NAME)) {
 			String sender = ctx.sender;
-			int cntPlusOne = updateCount(ctx.bot, sender);
+			int cntPlusOne = updateCount(ctx, sender);
 			ctx.reply("Hello " + sender + " ! You've said hello " + cntPlusOne + " times.");
 		}
 	}
