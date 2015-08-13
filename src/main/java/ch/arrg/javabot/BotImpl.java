@@ -6,6 +6,7 @@ import org.jibble.pircbot.IrcException;
 import org.jibble.pircbot.NickAlreadyInUseException;
 import org.jibble.pircbot.PircBot;
 
+import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserData;
 
 /**
@@ -37,7 +38,9 @@ public class BotImpl extends PircBot implements Bot {
 
 	@Override
 	protected void onMessage(String channel, String sender, String login, String hostname, String message) {
-		logic.onMessage(this, channel, sender, login, hostname, message);
+		BotContext ctx = new BotContext(this, channel, sender, login, hostname, message);
+
+		logic.onMessage(ctx);
 	}
 
 	@Override
