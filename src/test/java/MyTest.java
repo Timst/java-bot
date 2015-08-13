@@ -2,9 +2,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
+import ch.arrg.javabot.handlers.quiz.QuizQuestion;
+
 public class MyTest {
 	public static void main(String[] args) {
 		// TODO use JUnit
+
+		GuessWordHandler gwh = new GuessWordHandler();
+		QuizQuestion question = gwh.getNewQuestion();
+		System.out.println(question);
 	}
 
 	public static void fixEncoding() throws IOException {

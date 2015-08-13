@@ -21,6 +21,8 @@ public class GuessWordHandler extends AbstractQuizHandler {
 	public void help(BotContext ctx) {
 		ctx.reply("Braisnchat trivia word game !!");
 		ctx.reply("Use +guessword to start and stop the game");
+		ctx.reply("Each sentence will have a word replaced with ****. Guess the missing word.");
+		ctx.reply("Hint: the number of asterisks matches the number of characters in the word.");
 	}
 
 	@Override
@@ -34,11 +36,12 @@ public class GuessWordHandler extends AbstractQuizHandler {
 	}
 
 	private static class GuessWordQuestion implements QuizQuestion {
-		private static final int WORD_SIZE = 5;
+		private static final int MIN_WORD_SIZE = 5;
+		private static final int MAX_WORD_SIZE = 14;
 
 		private final LogLine logLine;
 
-		private final String word;
+		private final String missingWord;
 		private final String censored;
 
 		private boolean solved = false;
@@ -59,9 +62,9 @@ public class GuessWordHandler extends AbstractQuizHandler {
 			}
 
 			this.logLine = sentence;
-			word = chooseWord(sentence);
-			String replacement = Strings.repeat("*", word.length());
-			censored = sentence.message.replaceAll(Pattern.quote(word), replacement);
+			missingWord = chooseWord(sentence);
+			String replacement = Strings.repeat("*", missingWord.length());
+			censored = sentence.message.replaceAll(Pattern.quote(missingWord), replacement);
 		}
 
 		private static String chooseWord(LogLine sentence) {
@@ -69,8 +72,9 @@ public class GuessWordHandler extends AbstractQuizHandler {
 			while (true) {
 				// Terminates because line is valid
 				int idx = (int) (Math.random() * words.length);
-				if (words[idx].length() > WORD_SIZE) {
-					return words[idx];
+				String word = words[idx];
+				if (isValidWord(word)) {
+					return word;
 				}
 			}
 		}
@@ -84,9 +88,13 @@ public class GuessWordHandler extends AbstractQuizHandler {
 				return false;
 			}
 
+			if (tmp.message.contains("http")) {
+				return false;
+			}
+
 			String[] words = splitLine(tmp);
 			for (String word : words) {
-				if (word.length() > WORD_SIZE) {
+				if (isValidWord(word)) {
 					// There's a valid word
 					return true;
 				}
@@ -95,20 +103,24 @@ public class GuessWordHandler extends AbstractQuizHandler {
 			return false;
 		}
 
+		private static boolean isValidWord(String word) {
+			return word.length() > MIN_WORD_SIZE && word.length() < MAX_WORD_SIZE;
+		}
+
 		private static String[] splitLine(LogLine tmp) {
 			// TODO improve what a 'word' is
-			return tmp.message.split(" ");
+			return tmp.message.split("[\\s(\\),.!?\\[\\]<>]");
 		}
 
 		@Override
 		public void success(BotContext ctx, int score) {
-			ctx.reply("Correct ! The word was \"" + word + "\". " + ctx.sender + " now has " + score
+			ctx.reply("Correct ! The word was \"" + missingWord + "\". " + ctx.sender + " now has " + score
 					+ ". Next question...");
 		}
 
 		@Override
 		public void ask(BotContext ctx) {
-			ctx.reply("Guess the missing word: [" + logLine.user + ": " + censored + "]");
+			ctx.reply("Guess : [" + logLine.user + ": " + censored + "]");
 		}
 
 		@Override
@@ -123,7 +135,7 @@ public class GuessWordHandler extends AbstractQuizHandler {
 			tried.add(cSender);
 
 			String canonGuess = message.replaceAll("\\+", "").toLowerCase();
-			String canonCorrect = word.toLowerCase();
+			String canonCorrect = missingWord.toLowerCase();
 
 			if (canonCorrect.equals(canonGuess)) {
 				solved = true;
@@ -135,12 +147,12 @@ public class GuessWordHandler extends AbstractQuizHandler {
 
 		@Override
 		public void cancel(BotContext ctx) {
-			ctx.reply("The missing word was \"" + word + "\". Losers");
+			ctx.reply("The missing word was \"" + missingWord + "\". Losers");
 		}
 
 		@Override
 		public void timeout(BotContext ctx) {
-			ctx.reply("The missing word was \"" + word + "\". Losers");
+			ctx.reply("The missing word was \"" + missingWord + "\". Losers");
 		}
 	}
 }

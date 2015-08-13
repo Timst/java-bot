@@ -40,7 +40,7 @@ public abstract class AbstractQuizHandler implements CommandHandler {
 			}
 		}
 
-		if (CommandMatcher.make(getQuizName()).matches(message)) {
+		if (CommandMatcher.make("+" + getQuizName()).matches(message)) {
 			onCommand(ctx);
 		}
 	}

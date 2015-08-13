@@ -15,6 +15,14 @@ public class GuessWhoHandler extends AbstractQuizHandler {
 	}
 
 	@Override
+	public void handle(BotContext ctx) {
+		if (ctx.sender.equals("braisnbot")) {
+			return;
+		}
+		super.handle(ctx);
+	}
+
+	@Override
 	public void help(BotContext ctx) {
 		ctx.reply("Braisnchat trivia game !!");
 		ctx.reply("Use +guesswho to start and stop the game");
