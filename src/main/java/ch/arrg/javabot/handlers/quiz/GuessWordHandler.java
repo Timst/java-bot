@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.log.LogLine;
-import ch.arrg.javabot.util.HandlerUtils;
 import ch.arrg.javabot.util.LogLines;
 
 import com.google.common.base.Strings;
@@ -26,26 +25,7 @@ public class GuessWordHandler extends AbstractQuizHandler {
 
 	@Override
 	public QuizQuestion getNewQuestion() {
-		while (true) {
-			try {
-				LogLine sentence = selectSentence();
-				return new GuessWordQuestion(sentence);
-			} catch (IllegalStateException e) {
-				// Ignored
-			}
-		}
-	}
-
-	private static LogLine selectSentence() {
-		while (true) {
-			int idx = (int) (Math.random() * LogLines.LOG_LINES.size());
-			LogLine tmp = LogLines.LOG_LINES.get(idx);
-			if ("pubmsg".equals(tmp.kind)) {
-				if (tmp.message.length() > 30) {
-					return tmp;
-				}
-			}
-		}
+		return new GuessWordQuestion(LogLines.LOG_LINES);
 	}
 
 	@Override
@@ -54,6 +34,8 @@ public class GuessWordHandler extends AbstractQuizHandler {
 	}
 
 	private static class GuessWordQuestion implements QuizQuestion {
+		private static final int WORD_SIZE = 5;
+
 		private final LogLine logLine;
 
 		private final String word;
@@ -63,27 +45,59 @@ public class GuessWordHandler extends AbstractQuizHandler {
 
 		private List<String> tried = new ArrayList<>();
 
-		public GuessWordQuestion(LogLine line) {
-			this.logLine = line;
+		public GuessWordQuestion(List<LogLine> lines) {
+			// Valid sentences must be long enough
+			// And have at least one valid word
 
-			int tries = 0;
-			String[] words = line.message.split(" ");
-			String chosen = null;
-			while (chosen == null) {
-				int idx = HandlerUtils.random(0, words.length - 1);
-				String cand = words[idx];
-				if (cand.length() > 5) {
-					chosen = cand;
-				}
-				tries++;
-				if (tries > 10) {
-					throw new IllegalStateException();
+			LogLine sentence = null;
+			while (sentence == null) {
+				int lIdx = (int) (Math.random() * lines.size());
+				LogLine tmp = lines.get(lIdx);
+				if (isValidLine(tmp)) {
+					sentence = tmp;
 				}
 			}
 
-			word = chosen;
+			this.logLine = sentence;
+			word = chooseWord(sentence);
 			String replacement = Strings.repeat("*", word.length());
-			censored = line.message.replaceAll(Pattern.quote(word), replacement);
+			censored = sentence.message.replaceAll(Pattern.quote(word), replacement);
+		}
+
+		private static String chooseWord(LogLine sentence) {
+			String[] words = splitLine(sentence);
+			while (true) {
+				// Terminates because line is valid
+				int idx = (int) (Math.random() * words.length);
+				if (words[idx].length() > WORD_SIZE) {
+					return words[idx];
+				}
+			}
+		}
+
+		private static boolean isValidLine(LogLine tmp) {
+
+			if (!"pubmsg".equals(tmp.kind)) {
+				return false;
+			}
+			if (tmp.message.length() < 30) {
+				return false;
+			}
+
+			String[] words = splitLine(tmp);
+			for (String word : words) {
+				if (word.length() > WORD_SIZE) {
+					// There's a valid word
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private static String[] splitLine(LogLine tmp) {
+			// TODO improve what a 'word' is
+			return tmp.message.split(" ");
 		}
 
 		@Override
