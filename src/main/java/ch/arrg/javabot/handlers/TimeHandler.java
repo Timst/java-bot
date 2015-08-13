@@ -6,7 +6,7 @@ import java.util.TimeZone;
 
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
-import ch.arrg.javabot.util.HandlerUtils;
+import ch.arrg.javabot.util.CommandMatcher;
 
 public class TimeHandler implements CommandHandler {
 
@@ -15,13 +15,12 @@ public class TimeHandler implements CommandHandler {
 	@Override
 	public void handle(BotContext ctx) {
 
-		String message = ctx.message;
-		if ((message = HandlerUtils.withKeyword("time", message)) != null) {
+		CommandMatcher matcher = CommandMatcher.make("+time");
+		if (matcher.matches(ctx.message)) {
+			String zoneName = matcher.nextWord();
 
-			String[] words = message.split("\\s+");
-			String zoneName = words[0];
 			if (zoneName.equals("")) {
-				String saved = ctx.getUserData(ctx.sender).getRecord(TZ_RECORD);
+				String saved = ctx.getRecord(TZ_RECORD);
 				if (saved != null) {
 					zoneName = saved;
 				} else {

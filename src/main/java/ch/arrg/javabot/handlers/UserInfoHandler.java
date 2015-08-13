@@ -3,7 +3,7 @@ package ch.arrg.javabot.handlers;
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserDb;
-import ch.arrg.javabot.util.HandlerUtils;
+import ch.arrg.javabot.util.CommandMatcher;
 
 public class UserInfoHandler implements CommandHandler {
 
@@ -11,26 +11,18 @@ public class UserInfoHandler implements CommandHandler {
 	public void handle(BotContext ctx) {
 
 		String message = ctx.message;
-		if ((message = HandlerUtils.withKeyword("userinfo", message)) != null) {
-			String[] words = message.split("\\s+");
-			if (words == null || words.length == 0) {
-				return;
-			}
+		CommandMatcher matcher;
 
-			String action = words[0];
-			String reply = null;
-			if (action.equals("canon")) {
-				reply = "Your canonical username is " + UserDb.canonize(ctx.sender);
-			}
-
-			if (action.equals("records")) {
-				int keys = ctx.getUserData(ctx.sender).countKeys();
-				reply = "I have " + keys + " records about you.";
-			}
-
-			ctx.reply(reply);
+		matcher = CommandMatcher.make("+userinfo canon");
+		if (matcher.matches(message)) {
+			ctx.reply("Your canonical username is " + UserDb.canonize(ctx.sender));
 		}
 
+		matcher = CommandMatcher.make("+userinfo records");
+		if (matcher.matches(message)) {
+			int keys = ctx.getUserData(ctx.sender).countKeys();
+			ctx.reply("I have " + keys + " records about you.");
+		}
 	}
 
 	@Override

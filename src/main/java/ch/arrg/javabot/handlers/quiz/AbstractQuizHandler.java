@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
-import ch.arrg.javabot.util.HandlerUtils;
+import ch.arrg.javabot.util.CommandMatcher;
 
 public abstract class AbstractQuizHandler implements CommandHandler {
 
@@ -40,7 +40,7 @@ public abstract class AbstractQuizHandler implements CommandHandler {
 			}
 		}
 
-		if ((message = HandlerUtils.withKeyword(getQuizName(), message)) != null) {
+		if (CommandMatcher.make(getQuizName()).matches(message)) {
 			onCommand(ctx);
 		}
 	}

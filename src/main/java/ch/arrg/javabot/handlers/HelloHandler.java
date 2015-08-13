@@ -1,6 +1,5 @@
 package ch.arrg.javabot.handlers;
 
-import ch.arrg.javabot.Bot;
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
@@ -13,14 +12,13 @@ public class HelloHandler implements CommandHandler {
 	public void handle(BotContext ctx) {
 
 		if (ctx.message.equalsIgnoreCase("Hello " + Const.BOT_NAME)) {
-			String sender = ctx.sender;
-			int cntPlusOne = updateCount(ctx, sender);
-			ctx.reply("Hello " + sender + " ! You've said hello " + cntPlusOne + " times.");
+			int cntPlusOne = updateCount(ctx);
+			ctx.reply("Hello " + ctx.sender + " ! You've said hello " + cntPlusOne + " times.");
 		}
 	}
 
-	private static int updateCount(Bot bot, String sender) {
-		String cnt = bot.getUserData(sender).getRecord(KEY_HELLO_COUNT);
+	private static int updateCount(BotContext ctx) {
+		String cnt = ctx.getRecord(KEY_HELLO_COUNT);
 		int cntPlusOne = 1;
 		try {
 			int i = Integer.parseInt(cnt);
@@ -28,7 +26,7 @@ public class HelloHandler implements CommandHandler {
 		} catch (NumberFormatException e) {
 			// Ignore
 		}
-		bot.getUserData(sender).setRecord(KEY_HELLO_COUNT, "" + cntPlusOne);
+		ctx.setRecord(KEY_HELLO_COUNT, "" + cntPlusOne);
 		return cntPlusOne;
 	}
 

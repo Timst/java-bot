@@ -5,7 +5,7 @@ import java.util.concurrent.Executors;
 
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
-import ch.arrg.javabot.util.HandlerUtils;
+import ch.arrg.javabot.util.CommandMatcher;
 
 public class QuestionHandler implements CommandHandler {
 
@@ -19,8 +19,7 @@ public class QuestionHandler implements CommandHandler {
 	@Override
 	public void handle(BotContext ctx) {
 
-		String message = ctx.message;
-		if ((message = HandlerUtils.withKeyword("ask", message)) != null) {
+		if (CommandMatcher.make("+ask").matches(ctx.message)) {
 			if (busy) {
 				ctx.reply("Ask again in a minute, I'm busy");
 				return;

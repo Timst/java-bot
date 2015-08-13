@@ -5,7 +5,7 @@ import java.util.List;
 
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
-import ch.arrg.javabot.util.HandlerUtils;
+import ch.arrg.javabot.util.CommandMatcher;
 
 public class RecordHandler implements CommandHandler {
 
@@ -18,23 +18,19 @@ public class RecordHandler implements CommandHandler {
 	@Override
 	public void handle(BotContext ctx) {
 
-		String message = ctx.message;
-		if ((message = HandlerUtils.withKeyword("record", message)) != null) {
-			String[] words = message.split("\\s+");
-			if (words == null || words.length == 0) {
-				return;
-			}
+		CommandMatcher matcher = CommandMatcher.make("+record");
+		if (matcher.matches(ctx.message)) {
+			String action = matcher.nextWord();
 
-			String action = words[0];
 			if (allowedRecords.contains(action)) {
-				String value = words[1];
-				ctx.getUserData(ctx.sender).setRecord(action, value);
+				String value = matcher.nextWord();
+				ctx.setRecord(action, value);
 				ctx.reply("Okay I will remember.");
 			} else {
 				ctx.reply("This is now a known key, doot");
 			}
-		}
 
+		}
 	}
 
 	@Override
