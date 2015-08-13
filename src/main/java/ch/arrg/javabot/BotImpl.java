@@ -15,12 +15,14 @@ import ch.arrg.javabot.data.UserData;
  */
 public class BotImpl extends PircBot implements Bot {
 
+	private static final String ENCODING = "utf-8";
+
 	private BotLogic logic = new BotLogic();
 
 	public BotImpl() throws Exception {
 		setName(Const.BOT_NAME);
 		setLogin(Const.BOT_NAME);
-		setEncoding("utf-8");
+		setEncoding(ENCODING);
 	}
 
 	public void start() throws NickAlreadyInUseException, IOException, IrcException {
@@ -39,11 +41,6 @@ public class BotImpl extends PircBot implements Bot {
 	}
 
 	@Override
-	protected void onJoin(String channel, String sender, String login, String hostname) {
-
-	}
-
-	@Override
 	public void sendMsg(String target, String message) {
 		sendMessage(target, message);
 	}
@@ -55,7 +52,7 @@ public class BotImpl extends PircBot implements Bot {
 
 	@Override
 	public void quit() {
-		quitServer("Thanks mr skeltal");
+		quitServer(Const.QUIT_MESSAGE);
 		System.exit(1);
 	}
 }

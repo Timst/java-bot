@@ -11,4 +11,6 @@ public class Const {
 	public static final int SERVER_PORT = 6667;
 	public static final String CHANNEL = "##braisnchat";
 	public static final String DATA_FILE = "data/bot_data.dat";
+
+	public static final String QUIT_MESSAGE = "Thanks mr skeltal";
 }
