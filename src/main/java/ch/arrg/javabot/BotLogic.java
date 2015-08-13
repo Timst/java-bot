@@ -10,7 +10,7 @@ import ch.arrg.javabot.data.UserData;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.handlers.HelloHandler;
 import ch.arrg.javabot.handlers.QuestionHandler;
-import ch.arrg.javabot.handlers.QuitHandler;
+import ch.arrg.javabot.handlers.AdminHandler;
 import ch.arrg.javabot.handlers.RecordHandler;
 import ch.arrg.javabot.handlers.TimeHandler;
 import ch.arrg.javabot.handlers.UserInfoHandler;
@@ -32,7 +32,7 @@ public class BotLogic {
 		addHandler(new QuestionHandler());
 		addHandler(new GuessWhoHandler());
 		addHandler(new GuessWordHandler());
-		addHandler(new QuitHandler());
+		addHandler(new AdminHandler());
 
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
