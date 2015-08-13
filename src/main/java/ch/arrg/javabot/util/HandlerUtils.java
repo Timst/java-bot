@@ -1,6 +1,5 @@
 package ch.arrg.javabot.util;
 
-import ch.arrg.javabot.Bot;
 
 public class HandlerUtils {
 	public static String withKeyword(String keyword, String message) {
@@ -11,10 +10,6 @@ public class HandlerUtils {
 		}
 
 		return null;
-	}
-
-	public static Replyer makeReplyer(Bot bot, String channel) {
-		return new Replyer(bot, channel);
 	}
 
 	public static String getWord(String message, int index) {
