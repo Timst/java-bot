@@ -16,7 +16,7 @@ import ch.arrg.javabot.handlers.TimeHandler;
 import ch.arrg.javabot.handlers.UserInfoHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWhoHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
-import ch.arrg.javabot.util.HandlerUtils;
+import ch.arrg.javabot.util.CommandMatcher;
 
 public class BotLogic {
 
@@ -45,8 +45,9 @@ public class BotLogic {
 	protected void onMessage(BotContext ctx) {
 		String message = ctx.message.trim();
 
-		if (message.startsWith("+help")) {
-			onHelp(ctx);
+		CommandMatcher matcher = CommandMatcher.make("+help");
+		if (matcher.matches(message)) {
+			onHelp(ctx, matcher.nextWord());
 			return;
 		}
 
@@ -59,11 +60,10 @@ public class BotLogic {
 		}
 	}
 
-	private void onHelp(BotContext ctx) {
+	private void onHelp(BotContext ctx, String topic) {
 
-		String handlerName = HandlerUtils.getWord(ctx.message, 1);
-		if (handlers.containsKey(handlerName)) {
-			handlers.get(handlerName).help(ctx);
+		if (handlers.containsKey(topic)) {
+			handlers.get(topic).help(ctx);
 		} else {
 
 			ctx.reply("Here are known handlers: ");

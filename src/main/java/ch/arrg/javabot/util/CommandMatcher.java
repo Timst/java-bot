@@ -1,5 +1,7 @@
 package ch.arrg.javabot.util;
 
+import java.util.regex.Pattern;
+
 import com.google.common.base.Joiner;
 
 public class CommandMatcher {
@@ -15,7 +17,7 @@ public class CommandMatcher {
 	public boolean matches(String line) {
 		boolean matches = line.startsWith(pattern);
 		if (matches) {
-			String remaining = line.replaceFirst(pattern + "\\s*", "");
+			String remaining = line.replaceFirst(Pattern.quote(pattern) + "\\s*", "");
 			split = remaining.split("\\s+");
 			splitIdx = 0;
 		}
