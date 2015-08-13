@@ -22,6 +22,11 @@ import ch.arrg.javabot.handlers.quiz.GuessWhoHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
 import ch.arrg.javabot.util.HandlerUtils;
 
+/**
+ * Main bot logic
+ * 
+ * @author tgi
+ */
 public class BotImpl extends PircBot implements Bot {
 
 	private Map<String, CommandHandler> handlers = new TreeMap<>();
@@ -39,6 +44,7 @@ public class BotImpl extends PircBot implements Bot {
 		addHandler(new QuitHandler());
 
 		setName(Const.BOT_NAME);
+		setLogin(Const.BOT_NAME);
 
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
