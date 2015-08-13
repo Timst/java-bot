@@ -3,10 +3,10 @@ package ch.arrg.javabot.handlers.quiz;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.log.LogLine;
 import ch.arrg.javabot.util.LogLines;
-import ch.arrg.javabot.util.Replyer;
 
 public class GuessWhoHandler extends AbstractQuizHandler {
 
@@ -15,9 +15,9 @@ public class GuessWhoHandler extends AbstractQuizHandler {
 	}
 
 	@Override
-	public void help(Replyer rep, String message) {
-		rep.send("Braisnchat trivia game !!");
-		rep.send("Use +guesswho to start and stop the game");
+	public void help(BotContext ctx) {
+		ctx.reply("Braisnchat trivia game !!");
+		ctx.reply("Use +guesswho to start and stop the game");
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class GuessWhoHandler extends AbstractQuizHandler {
 
 		private boolean solved = false;
 
-		private List<String> tried = new ArrayList<String>();
+		private List<String> tried = new ArrayList<>();
 
 		public GuessWhoQuestion(LogLine line) {
 			this.logLine = line;
@@ -72,24 +72,24 @@ public class GuessWhoHandler extends AbstractQuizHandler {
 		}
 
 		@Override
-		public void cancel(Replyer rep) {
-			rep.send("It was " + logLine.user + " who said \"" + logLine.message + "\". Losers");
+		public void cancel(BotContext ctx) {
+			ctx.reply("It was " + logLine.user + " who said \"" + logLine.message + "\". Losers");
 		}
 
 		@Override
-		public void timeout(Replyer rep) {
-			rep.send("It was " + logLine.user + " who said \"" + logLine.message + "\". Losers");
+		public void timeout(BotContext ctx) {
+			ctx.reply("It was " + logLine.user + " who said \"" + logLine.message + "\". Losers");
 		}
 
 		@Override
-		public void success(Replyer rep, String sender, int score) {
-			rep.send("Correct ! It was " + logLine.user + " who said it. " + sender + " now has " + score
+		public void success(BotContext ctx, int score) {
+			ctx.reply("Correct ! It was " + logLine.user + " who said it. " + ctx.sender + " now has " + score
 					+ ". Next question...");
 		}
 
 		@Override
-		public void ask(Replyer rep) {
-			rep.send("Who said: \"" + logLine.message + "\" ?");
+		public void ask(BotContext ctx) {
+			ctx.reply("Who said: \"" + logLine.message + "\" ?");
 		}
 	}
 }

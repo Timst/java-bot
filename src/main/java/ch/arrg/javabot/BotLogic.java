@@ -52,7 +52,7 @@ public class BotLogic {
 
 		for (CommandHandler handler : handlers.values()) {
 			try {
-				handler.handle(ctx.bot, ctx.channel, ctx.sender, ctx.login, ctx.hostname, message);
+				handler.handle(ctx);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -63,7 +63,7 @@ public class BotLogic {
 
 		String handlerName = HandlerUtils.getWord(ctx.message, 1);
 		if (handlers.containsKey(handlerName)) {
-			handlers.get(handlerName).help(ctx.replyer(), ctx.message);
+			handlers.get(handlerName).help(ctx);
 		} else {
 
 			ctx.reply("Here are known handlers: ");

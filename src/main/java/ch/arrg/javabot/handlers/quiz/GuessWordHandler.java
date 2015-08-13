@@ -3,11 +3,11 @@ package ch.arrg.javabot.handlers.quiz;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.log.LogLine;
 import ch.arrg.javabot.util.HandlerUtils;
 import ch.arrg.javabot.util.LogLines;
-import ch.arrg.javabot.util.Replyer;
 
 import com.google.common.base.Strings;
 
@@ -18,9 +18,9 @@ public class GuessWordHandler extends AbstractQuizHandler {
 	}
 
 	@Override
-	public void help(Replyer rep, String message) {
-		rep.send("Braisnchat trivia word game !!");
-		rep.send("Use +guessword to start and stop the game");
+	public void help(BotContext ctx) {
+		ctx.reply("Braisnchat trivia word game !!");
+		ctx.reply("Use +guessword to start and stop the game");
 	}
 
 	@Override
@@ -30,11 +30,12 @@ public class GuessWordHandler extends AbstractQuizHandler {
 				LogLine sentence = selectSentence();
 				return new GuessWordQuestion(sentence);
 			} catch (IllegalStateException e) {
+				// Ignored
 			}
 		}
 	}
 
-	private LogLine selectSentence() {
+	private static LogLine selectSentence() {
 		while (true) {
 			int idx = (int) (Math.random() * LogLines.LOG_LINES.size());
 			LogLine tmp = LogLines.LOG_LINES.get(idx);
@@ -59,7 +60,7 @@ public class GuessWordHandler extends AbstractQuizHandler {
 
 		private boolean solved = false;
 
-		private List<String> tried = new ArrayList<String>();
+		private List<String> tried = new ArrayList<>();
 
 		public GuessWordQuestion(LogLine line) {
 			this.logLine = line;
@@ -85,13 +86,14 @@ public class GuessWordHandler extends AbstractQuizHandler {
 		}
 
 		@Override
-		public void success(Replyer rep, String sender, int score) {
-			rep.send("Correct ! The word was \"" + word + "\". " + sender + " now has " + score + ". Next question...");
+		public void success(BotContext ctx, int score) {
+			ctx.reply("Correct ! The word was \"" + word + "\". " + ctx.sender + " now has " + score
+					+ ". Next question...");
 		}
 
 		@Override
-		public void ask(Replyer rep) {
-			rep.send("Guess the missing word: [" + logLine.user + ": " + censored + "]");
+		public void ask(BotContext ctx) {
+			ctx.reply("Guess the missing word: [" + logLine.user + ": " + censored + "]");
 		}
 
 		@Override
@@ -117,13 +119,13 @@ public class GuessWordHandler extends AbstractQuizHandler {
 		}
 
 		@Override
-		public void cancel(Replyer rep) {
-			rep.send("The missing word was \"" + word + "\". Losers");
+		public void cancel(BotContext ctx) {
+			ctx.reply("The missing word was \"" + word + "\". Losers");
 		}
 
 		@Override
-		public void timeout(Replyer rep) {
-			rep.send("The missing word was \"" + word + "\". Losers");
+		public void timeout(BotContext ctx) {
+			ctx.reply("The missing word was \"" + word + "\". Losers");
 		}
 	}
 }

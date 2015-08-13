@@ -3,10 +3,9 @@ package ch.arrg.javabot.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.arrg.javabot.Bot;
 import ch.arrg.javabot.CommandHandler;
+import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HandlerUtils;
-import ch.arrg.javabot.util.Replyer;
 
 public class RecordHandler implements CommandHandler {
 
@@ -17,29 +16,25 @@ public class RecordHandler implements CommandHandler {
 	}
 
 	@Override
-	public void handle(Bot bot, String channel, String sender, String login,
-			String hostname, String message) {
+	public void handle(BotContext ctx) {
 
+		String message = ctx.message;
 		if ((message = HandlerUtils.withKeyword("record", message)) != null) {
-			handle(HandlerUtils.makeReplyer(bot, channel), bot, sender, message);
+			String[] words = message.split("\\s+");
+			if (words == null || words.length == 0) {
+				return;
+			}
+
+			String action = words[0];
+			if (allowedRecords.contains(action)) {
+				String value = words[1];
+				ctx.bot.getUserData(ctx.sender).setRecord(action, value);
+				ctx.reply("Okay I will remember.");
+			} else {
+				ctx.reply("This is now a known key, doot");
+			}
 		}
 
-	}
-
-	private void handle(Replyer replyer, Bot bot, String sender, String message) {
-		String[] words = message.split("\\s+");
-		if (words == null || words.length == 0) {
-			return;
-		}
-
-		String action = words[0];
-		if (allowedRecords.contains(action)) {
-			String value = words[1];
-			bot.getUserData(sender).setRecord(action, value);
-			replyer.send("Okay I will remember.");
-		} else {
-			replyer.send("This is now a known key, doot");
-		}
 	}
 
 	@Override
@@ -48,10 +43,10 @@ public class RecordHandler implements CommandHandler {
 	}
 
 	@Override
-	public void help(Replyer rep, String message) {
-		rep.send("Set info about yourself.");
-		rep.send("Use +record <key> <value> to set a record.");
+	public void help(BotContext ctx) {
+		ctx.reply("Set info about yourself.");
+		ctx.reply("Use +record <key> <value> to set a record.");
 		String allowed = String.join(", ", allowedRecords);
-		rep.send("Allowed records are: [" + allowed + "]");
+		ctx.reply("Allowed records are: [" + allowed + "]");
 	}
 }

@@ -10,10 +10,9 @@ import java.util.TreeSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import ch.arrg.javabot.Bot;
 import ch.arrg.javabot.CommandHandler;
+import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HandlerUtils;
-import ch.arrg.javabot.util.Replyer;
 
 public abstract class AbstractQuizHandler implements CommandHandler {
 
@@ -27,61 +26,63 @@ public abstract class AbstractQuizHandler implements CommandHandler {
 
 	protected int SCORE_LIMIT = 7;
 
-	private Map<String, Integer> scores = new HashMap<String, Integer>();
+	private Map<String, Integer> scores = new HashMap<>();
 
 	private QuizQuestion currentQuestion;
 
 	@Override
-	public void handle(Bot bot, String channel, String sender, String login, String hostname, String message) {
-		final Replyer rep = HandlerUtils.makeReplyer(bot, channel);
+	public void handle(BotContext ctx) {
+		String message = ctx.message;
 
 		if (currentQuestion != null) {
 			if (message.startsWith("+")) {
-				onReply(sender, message, rep);
+				onReply(ctx);
 			}
 		}
 
 		if ((message = HandlerUtils.withKeyword(getQuizName(), message)) != null) {
-			onCommand(rep);
+			onCommand(ctx);
 		}
 	}
 
-	private void onReply(String sender, String message, final Replyer rep) {
-		boolean success = currentQuestion.tryGuess(sender, message);
+	private void onReply(final BotContext ctx) {
+		String sender = ctx.sender;
+
+		boolean success = currentQuestion.tryGuess(sender, ctx.message);
 
 		int score = changeScore(sender, success);
 
 		if (score >= SCORE_LIMIT) {
-			endgame(rep);
+			endgame(ctx);
 			return;
 		}
 
 		if (success) {
-			currentQuestion.success(rep, sender, score);
+			currentQuestion.success(ctx, score);
 
 			Executors.newScheduledThreadPool(1).schedule(new Runnable() {
 				@Override
 				public void run() {
-					askNewQuestion(rep);
+					askNewQuestion(ctx);
 				}
 			}, QUESTION_DELAY, TimeUnit.SECONDS);
 		}
 	}
 
-	private void onCommand(final Replyer rep) {
+	private void onCommand(final BotContext ctx) {
 		if (currentQuestion == null) {
-			rep.send("Starting the game !");
-			askNewQuestion(rep);
+			ctx.reply("Starting the game !");
+			askNewQuestion(ctx);
 		} else {
-			currentQuestion.cancel(rep);
+			currentQuestion.cancel(ctx);
 			currentQuestion = null;
-			rep.send("Stopping the game !");
-			endgame(rep);
+			ctx.reply("Stopping the game !");
+			endgame(ctx);
 		}
 	}
 
-	private void endgame(Replyer rep) {
-		Map<Integer, Set<String>> scoreBoard = new TreeMap<Integer, Set<String>>(Collections.reverseOrder());
+	private void endgame(BotContext ctx) {
+		Map<Integer, Set<String>> scoreBoard = new TreeMap<>(Collections.reverseOrder());
 		for (Entry<String, Integer> e : scores.entrySet()) {
 			Integer score = e.getValue();
 			if (!scoreBoard.containsKey(score)) {
@@ -95,13 +96,13 @@ public abstract class AbstractQuizHandler implements CommandHandler {
 		int eq = 0;
 		for (Entry<Integer, Set<String>> e : scoreBoard.entrySet()) {
 			if (rank == 1 && eq == 0) {
-				rep.send("Game is over, " + e.getValue().iterator().next() + " won !");
-				rep.send("Scoreboard: ");
+				ctx.reply("Game is over, " + e.getValue().iterator().next() + " won !");
+				ctx.reply("Scoreboard: ");
 			}
 
 			int score = e.getKey();
 			for (String user : e.getValue()) {
-				rep.send("#" + rank + " " + user + " (" + score + ")");
+				ctx.reply("#" + rank + " " + user + " (" + score + ")");
 				eq++;
 			}
 
@@ -125,25 +126,25 @@ public abstract class AbstractQuizHandler implements CommandHandler {
 		return scores.get(sender);
 	}
 
-	private void timeout(Replyer rep) {
+	private void timeout(BotContext rep) {
 		currentQuestion.timeout(rep);
 		currentQuestion = null;
 		askNewQuestion(rep);
 	}
 
-	private void askNewQuestion(final Replyer rep) {
+	private void askNewQuestion(final BotContext ctx) {
 		final QuizQuestion newQuestion = getNewQuestion();
-		scheduleTimeout(rep, newQuestion);
+		scheduleTimeout(ctx, newQuestion);
 		currentQuestion = newQuestion;
-		currentQuestion.ask(rep);
+		currentQuestion.ask(ctx);
 	}
 
-	private void scheduleTimeout(final Replyer rep, final QuizQuestion newQuestion) {
+	private void scheduleTimeout(final BotContext ctx, final QuizQuestion newQuestion) {
 		Runnable timeout = new Runnable() {
 			@Override
 			public void run() {
 				if (currentQuestion == newQuestion) {
-					timeout(rep);
+					timeout(ctx);
 				}
 			}
 		};

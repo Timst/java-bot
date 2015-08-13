@@ -1,18 +1,17 @@
 package ch.arrg.javabot.handlers;
 
-import ch.arrg.javabot.Bot;
 import ch.arrg.javabot.CommandHandler;
+import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserDb;
-import ch.arrg.javabot.util.Replyer;
 
 public class QuitHandler implements CommandHandler {
 
 	@Override
-	public void handle(Bot bot, String channel, String sender, String login, String hostname, String message) {
+	public void handle(BotContext ctx) {
 
-		if ("+quit".equals(message) && UserDb.canonize(sender).equals("arrg")) {
-			bot.sendMsg(channel, "Thanks mr skeltal");
-			bot.quit();
+		if ("+quit".equals(ctx.message) && UserDb.canonize(ctx.sender).equals("arrg")) {
+			ctx.reply("Thanks mr skeltal");
+			ctx.bot.quit();
 		}
 	}
 
@@ -22,7 +21,7 @@ public class QuitHandler implements CommandHandler {
 	}
 
 	@Override
-	public void help(Replyer rep, String message) {
-		rep.send("Kill me");
+	public void help(BotContext ctx) {
+		ctx.reply("Kill me");
 	}
 }

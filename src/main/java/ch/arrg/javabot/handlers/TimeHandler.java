@@ -4,42 +4,39 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import ch.arrg.javabot.Bot;
 import ch.arrg.javabot.CommandHandler;
+import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HandlerUtils;
-import ch.arrg.javabot.util.Replyer;
 
 public class TimeHandler implements CommandHandler {
 
 	public static final String TZ_RECORD = "tz";
 
 	@Override
-	public void handle(Bot bot, String channel, String sender, String login,
-			String hostname, String message) {
+	public void handle(BotContext ctx) {
 
-		Replyer rep = HandlerUtils.makeReplyer(bot, channel);
-
+		String message = ctx.message;
 		if ((message = HandlerUtils.withKeyword("time", message)) != null) {
 
 			String[] words = message.split("\\s+");
 			String zoneName = words[0];
 			if (zoneName.equals("")) {
-				String saved = bot.getUserData(sender).getRecord(TZ_RECORD);
+				String saved = ctx.bot.getUserData(ctx.sender).getRecord(TZ_RECORD);
 				if (saved != null) {
 					zoneName = saved;
 				} else {
-					rep.send("I don't know about your timezone, honey");
+					ctx.reply("I don't know about your timezone, honey");
 					return;
 				}
 			}
 
 			String time = getRemoteTime(zoneName);
-			rep.send("It is " + time + " (" + zoneName + ")");
+			ctx.reply("It is " + time + " (" + zoneName + ")");
 		}
 
 	}
 
-	private String getRemoteTime(String zoneName) {
+	private static String getRemoteTime(String zoneName) {
 		TimeZone targetTz = TimeZone.getTimeZone(zoneName);
 		TimeZone localTz = TimeZone.getDefault();
 		Calendar cal = Calendar.getInstance();
@@ -48,8 +45,7 @@ public class TimeHandler implements CommandHandler {
 		cal.setTimeZone(localTz);
 		cal.add(Calendar.MILLISECOND, localTz.getRawOffset() * -1);
 		if (localTz.inDaylightTime(cal.getTime())) {
-			cal.add(Calendar.MILLISECOND, cal.getTimeZone().getDSTSavings()
-					* -1);
+			cal.add(Calendar.MILLISECOND, cal.getTimeZone().getDSTSavings() * -1);
 		}
 
 		// Offset to target
@@ -69,10 +65,10 @@ public class TimeHandler implements CommandHandler {
 	}
 
 	@Override
-	public void help(Replyer rep, String message) {
-		rep.send("Get timezone aware time");
-		rep.send("Use +time <timezone> to get the time of a particular timezone.");
-		rep.send("If your timezone is recorded, you can just use +time.");
+	public void help(BotContext ctx) {
+		ctx.reply("Get timezone aware time");
+		ctx.reply("Use +time <timezone> to get the time of a particular timezone.");
+		ctx.reply("If your timezone is recorded, you can just use +time.");
 	}
 
 }

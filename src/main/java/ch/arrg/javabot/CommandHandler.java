@@ -1,6 +1,6 @@
 package ch.arrg.javabot;
 
-import ch.arrg.javabot.util.Replyer;
+import ch.arrg.javabot.data.BotContext;
 
 /**
  * A command handler is able to receive commands and react to them.
@@ -8,9 +8,9 @@ import ch.arrg.javabot.util.Replyer;
  * @author tgi
  */
 public interface CommandHandler {
-	public void handle(Bot bot, String channel, String sender, String login, String hostname, String message);
+	public void handle(BotContext ctx);
 
 	public String getName();
 
-	public void help(Replyer rep, String message);
+	public void help(BotContext ctx);
 }

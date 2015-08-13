@@ -4,10 +4,10 @@ import java.nio.file.Paths;
 
 public class MyTest {
 	public static void main(String[] args) {
-
+		// TODO use JUnit
 	}
 
-	private static void fixEncoding() throws IOException {
+	public static void fixEncoding() throws IOException {
 		byte[] bytes = Files.readAllBytes(Paths.get("data/log.csv"));
 		String doubleEncoded = new String(bytes, "utf-8");
 		byte[] bytes2 = doubleEncoded.getBytes("iso-8859-1");

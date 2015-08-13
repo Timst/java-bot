@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 import ch.arrg.javabot.Bot;
 import ch.arrg.javabot.CommandHandler;
+import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserData;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.handlers.HelloHandler;
@@ -18,7 +19,9 @@ public class CliTest {
 				if (line.equals("")) {
 					break;
 				}
-				ch.handle(bot, "##braisnchat", "arrg_ch", "arrg", "hostname", line);
+
+				BotContext ctx = new BotContext(bot, "##braisnchat", "arrg_ch", "arrg", "hostname", line);
+				ch.handle(ctx);
 			}
 		}
 	}

@@ -29,7 +29,7 @@ public class LogLines {
 		Reader reader = new InputStreamReader(new FileInputStream("data/log-fixed.csv"), "utf-8");
 		try (CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL)) {
 
-			List<LogLine> lines = new ArrayList<LogLine>();
+			List<LogLine> lines = new ArrayList<>();
 			for (CSVRecord rec : parser) {
 				LogLine ll = new LogLine();
 				ll.id = Integer.parseInt(rec.get(0));
