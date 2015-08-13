@@ -2,6 +2,7 @@ package ch.arrg.javabot.handlers.quiz;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserDb;
@@ -14,7 +15,7 @@ import com.google.common.base.Strings;
 public class GuessWordHandler extends AbstractQuizHandler {
 
 	public GuessWordHandler() {
-		QUESTION_TIMEOUT = 30;
+		QUESTION_TIMEOUT = 25;
 	}
 
 	@Override
@@ -82,7 +83,7 @@ public class GuessWordHandler extends AbstractQuizHandler {
 
 			word = chosen;
 			String replacement = Strings.repeat("*", word.length());
-			censored = line.message.replaceAll(word, replacement);
+			censored = line.message.replaceAll(Pattern.quote(word), replacement);
 		}
 
 		@Override
