@@ -1,19 +1,34 @@
 package ch.arrg.javabot.handlers;
 
+import java.util.List;
+
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
+import ch.arrg.javabot.util.HandlerUtils;
+
+import com.google.common.collect.Lists;
 
 public class HelloHandler implements CommandHandler {
 
 	private static final String KEY_HELLO_COUNT = "hellos";
 
+	private final List<String> helloWords;
+
+	public HelloHandler() {
+		helloWords = Lists.newArrayList("Hello", "Hi", "Yo", "Lo", "Salut", "Bonjour", "Guten Tag");
+	}
+
 	@Override
 	public void handle(BotContext ctx) {
 
-		if (ctx.message.equalsIgnoreCase("Hello " + Const.BOT_NAME)) {
-			int cntPlusOne = updateCount(ctx);
-			ctx.reply("Hello " + ctx.sender + " ! You've said hello " + cntPlusOne + " times.");
+		for (String helloWord : helloWords) {
+			if (ctx.message.equalsIgnoreCase(helloWord + " " + Const.BOT_NAME)) {
+				int cntPlusOne = updateCount(ctx);
+				String replyWord = HandlerUtils.random(helloWords);
+
+				ctx.reply(replyWord + " " + ctx.sender + " ! You've greeted me " + cntPlusOne + " times.");
+			}
 		}
 	}
 
