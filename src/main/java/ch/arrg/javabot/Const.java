@@ -1,14 +1,35 @@
 package ch.arrg.javabot;
 
-/** Application configuration. Should be in a file
+import java.io.FileInputStream;
+import java.util.Properties;
+
+/** Application configuration.
  * 
  * @author tgi */
 public class Const {
-	public static final String BOT_NAME = "me_too_thanks";
-	public static final String SERVER_URL = "chat.freenode.net";
-	public static final int SERVER_PORT = 6667;
-	public static final String CHANNEL = "##braisnchat";
-	public static final String DATA_FILE = "data/bot_data.dat";
+	private static final Properties props = new Properties();
 	
-	public static final String QUIT_MESSAGE = "Thanks mr skeltal";
+	static {
+		try (FileInputStream fis = new FileInputStream("data/config.properties")) {
+			props.load(fis);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static String str(String key) {
+		return props.getProperty(key);
+	}
+	
+	private static int asInt(String key) {
+		return Integer.parseInt(props.getProperty(key));
+	}
+	
+	public static final String BOT_NAME = str("bot.name");
+	public static final String SERVER_URL = str("server.url");
+	public static final int SERVER_PORT = asInt("server.port");
+	public static final String CHANNEL = str("channel");
+	public static final String DATA_FILE = str("data.file");
+	
+	public static final String QUIT_MESSAGE = str("quit.message");
 }
