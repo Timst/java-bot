@@ -9,9 +9,11 @@ import ch.arrg.javabot.data.UserData;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.handlers.AdminHandler;
 import ch.arrg.javabot.handlers.HelloHandler;
+import ch.arrg.javabot.handlers.MarkovHandler;
 import ch.arrg.javabot.handlers.RecordHandler;
 import ch.arrg.javabot.handlers.TimeHandler;
 import ch.arrg.javabot.handlers.UserInfoHandler;
+import ch.arrg.javabot.handlers.YoutubeHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWhoHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
 import ch.arrg.javabot.util.CommandMatcher;
@@ -31,6 +33,8 @@ public class BotLogic {
 		addHandler(new GuessWhoHandler());
 		addHandler(new GuessWordHandler());
 		addHandler(new AdminHandler());
+		addHandler(new YoutubeHandler());
+		addHandler(new MarkovHandler());
 		
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
