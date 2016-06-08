@@ -42,7 +42,7 @@ public class BotContext implements Bot {
 	}
 
 	public String getRecord(String recordName) {
-		return bot.getUserData(sender).getRecord(recordName);
+		return bot.getUserData(sender).getRecordStr(recordName);
 	}
 
 	public void setRecord(String key, String value) {
