@@ -3,20 +3,18 @@ package ch.arrg.javabot.handlers;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.IrcEventHandler;
 import ch.arrg.javabot.data.BotContext;
+import ch.arrg.javabot.data.UserData;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.util.CommandMatcher;
 
 public class MemoHandler implements CommandHandler, IrcEventHandler {
 	
-	// TODO use UserDb
-	Map<String, List<MemoMessage>> messages = new HashMap<String, List<MemoMessage>>();
+	private static final String DATA_KEY = "MemoHandler";
 	
 	@Override
 	public void handle(BotContext ctx) {
@@ -27,34 +25,38 @@ public class MemoHandler implements CommandHandler, IrcEventHandler {
 			
 			MemoMessage msg = new MemoMessage(ctx.sender, user, new Date(),
 					matcher.remaining());
-			storeMessage(msg);
+			storeMessage(ctx, msg);
 			
 			ctx.reply("Ok I'll tell " + user + " when xir get back.");
 		}
 	}
 	
-	private void storeMessage(MemoMessage msg) {
+	private static void storeMessage(BotContext ctx, MemoMessage msg) {
 		String userCanon = UserDb.canonize(msg.to);
 		
-		if(!messages.containsKey(userCanon)) {
-			messages.put(userCanon, new ArrayList<MemoMessage>());
-		}
+		UserData dat = ctx.getUserData(userCanon);
+		List<MemoMessage> messages = dat.getOrInit(DATA_KEY, new ArrayList<MemoMessage>());
 		
-		messages.get(userCanon).add(msg);
+		messages.add(msg);
+		
+		dat.setRecord(DATA_KEY, messages);
 	}
 	
 	@Override
 	public void onJoin(String user, BotContext ctx) {
 		String userCanon = UserDb.canonize(user);
 		
-		List<MemoMessage> list = messages.get(userCanon);
-		if(list != null && !list.isEmpty()) {
+		UserData dat = ctx.getUserData(userCanon);
+		List<MemoMessage> messages = dat.getOrInit(DATA_KEY, new ArrayList<MemoMessage>());
+		
+		if(messages != null && !messages.isEmpty()) {
 			ctx.reply("Hi " + user + ", here are messages for you : ");
-			for(MemoMessage msg : list) {
+			for(MemoMessage msg : messages) {
 				ctx.reply("From " + msg.from + " on " + msg.when + " : " + msg.msg);
 			}
 			
-			list.clear();
+			messages.clear();
+			dat.setRecord(DATA_KEY, messages);
 		}
 	}
 	
