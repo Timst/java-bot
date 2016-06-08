@@ -8,25 +8,26 @@ import java.util.Map;
  * 
  * @author tgi */
 public class UserData implements Serializable {
-	private Map<String, Serializable> data = new HashMap<>();
+	private Map<String, Object> data = new HashMap<>();
 	
 	public String getRecordStr(String key) {
 		return (String) getRecord(key);
 	}
 	
-	private Serializable getRecord(String key) {
+	private Object getRecord(String key) {
 		return data.get(key);
 	}
 	
-	public String getOrInit(String key, Serializable defaultValue) {
-		if(getRecordStr(key) == null) {
+	@SuppressWarnings("unchecked")
+	public <T extends Serializable> T getOrInit(String key, T defaultValue) {
+		if(getRecord(key) == null) {
 			setRecord(key, defaultValue);
 		}
 		
-		return getRecordStr(key);
+		return (T) getRecord(key);
 	}
 	
-	public void setRecord(String key, Serializable value) {
+	public void setRecord(String key, Object value) {
 		data.put(key, value);
 	}
 	

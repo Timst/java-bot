@@ -10,30 +10,32 @@ import ch.arrg.javabot.util.HandlerUtils;
 import com.google.common.collect.Lists;
 
 public class HelloHandler implements CommandHandler {
-
+	
 	private static final String KEY_HELLO_COUNT = "hellos";
-
+	
 	private final List<String> helloWords;
-
+	
 	public HelloHandler() {
-		helloWords = Lists.newArrayList("Hello", "Hi", "Yo", "Lo", "Salut", "Bonjour", "Guten Tag");
+		helloWords = Lists.newArrayList("Hello", "Hi", "Yo", "Lo", "Salut", "Bonjour",
+				"Guten Tag");
 	}
-
+	
 	@Override
 	public void handle(BotContext ctx) {
-
-		for (String helloWord : helloWords) {
-			if (ctx.message.equalsIgnoreCase(helloWord + " " + Const.BOT_NAME)) {
+		
+		for(String helloWord : helloWords) {
+			if(ctx.message.equalsIgnoreCase(helloWord + " " + Const.BOT_NAME)) {
 				int cntPlusOne = updateCount(ctx);
 				String replyWord = HandlerUtils.random(helloWords);
-
-				ctx.reply(replyWord + " " + ctx.sender + " ! You've greeted me " + cntPlusOne + " times.");
+				
+				ctx.reply(replyWord + " " + ctx.sender + " ! You've greeted me " + cntPlusOne
+						+ " times.");
 			}
 		}
 	}
-
+	
 	private static int updateCount(BotContext ctx) {
-		String cnt = ctx.getRecord(KEY_HELLO_COUNT);
+		String cnt = ctx.getRecordStr(KEY_HELLO_COUNT);
 		int cntPlusOne = 1;
 		try {
 			int i = Integer.parseInt(cnt);
@@ -44,12 +46,12 @@ public class HelloHandler implements CommandHandler {
 		ctx.setRecord(KEY_HELLO_COUNT, "" + cntPlusOne);
 		return cntPlusOne;
 	}
-
+	
 	@Override
 	public String getName() {
 		return "+hello";
 	}
-
+	
 	@Override
 	public void help(BotContext ctx) {
 		ctx.reply("Say hello to me");

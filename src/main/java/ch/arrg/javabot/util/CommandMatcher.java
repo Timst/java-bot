@@ -42,7 +42,7 @@ public class CommandMatcher {
 	}
 	
 	public String remaining() {
-		String[] remainingWords = Arrays.copyOfRange(split, splitIdx - 1, split.length - 1);
+		String[] remainingWords = Arrays.copyOfRange(split, splitIdx, split.length);
 		return Joiner.on(' ').join(remainingWords);
 	}
 	
