@@ -10,6 +10,7 @@ import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.handlers.AdminHandler;
 import ch.arrg.javabot.handlers.HelloHandler;
 import ch.arrg.javabot.handlers.MarkovHandler;
+import ch.arrg.javabot.handlers.MemoHandler;
 import ch.arrg.javabot.handlers.RecordHandler;
 import ch.arrg.javabot.handlers.TimeHandler;
 import ch.arrg.javabot.handlers.UserInfoHandler;
@@ -21,6 +22,7 @@ import ch.arrg.javabot.util.CommandMatcher;
 public class BotLogic {
 	
 	private Map<String, CommandHandler> handlers = new TreeMap<>();
+	private Map<String, IrcEventHandler> eventHandlers = new TreeMap<>();
 	
 	private final UserDb userDb;
 	
@@ -35,6 +37,7 @@ public class BotLogic {
 		addHandler(new AdminHandler());
 		addHandler(new YoutubeHandler());
 		addHandler(new MarkovHandler());
+		addHandler(new MemoHandler());
 		
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
@@ -42,6 +45,10 @@ public class BotLogic {
 	
 	private void addHandler(CommandHandler h) {
 		handlers.put(h.getName(), h);
+		
+		if(h instanceof IrcEventHandler) {
+			eventHandlers.put(h.getName(), (IrcEventHandler) h);
+		}
 	}
 	
 	protected void onMessage(BotContext ctx) {
@@ -56,6 +63,16 @@ public class BotLogic {
 		for(CommandHandler handler : handlers.values()) {
 			try {
 				handler.handle(ctx);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void onJoin(BotContext ctx) {
+		for(IrcEventHandler handler : eventHandlers.values()) {
+			try {
+				handler.onJoin(ctx.sender, ctx);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
