@@ -32,4 +32,7 @@ public class Const {
 	public static final String DATA_FILE = str("data.file");
 	
 	public static final String QUIT_MESSAGE = str("quit.message");
+	public static final String DB_DRIVER = str("db.driver");
+	public static final String DB_CONN_STRING = str("db.conn.string");
+	public static final String DB_TABLE = str("db.table");
 }

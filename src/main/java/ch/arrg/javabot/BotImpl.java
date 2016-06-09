@@ -8,6 +8,8 @@ import org.jibble.pircbot.PircBot;
 
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserData;
+import ch.arrg.javabot.log.DatabaseLogService;
+import ch.arrg.javabot.log.DatabaseLogService.LogEvent;
 
 /** Main bot logic
  * 
@@ -39,14 +41,49 @@ public class BotImpl extends PircBot implements Bot {
 			String message) {
 		BotContext ctx = new BotContext(this, channel, sender, login, hostname, message);
 		
+		DatabaseLogService.logEvent(LogEvent.MESSAGE, ctx);
 		logic.onMessage(ctx);
 	}
 	
 	@Override
 	protected void onJoin(String channel, String sender, String login, String hostname) {
 		BotContext ctx = new BotContext(this, channel, sender, login, hostname, null);
-		
+		DatabaseLogService.logEvent(LogEvent.JOIN, ctx);
 		logic.onJoin(ctx);
+	}
+	
+	@Override
+	protected void onQuit(String sender, String login, String hostname, String reason) {
+		BotContext ctx = new BotContext(this, Const.CHANNEL, sender, login, hostname, reason);
+		DatabaseLogService.logEvent(LogEvent.QUIT, ctx);
+	}
+	
+	@Override
+	protected void onPart(String channel, String sender, String login, String hostname) {
+		BotContext ctx = new BotContext(this, channel, sender, login, hostname, "part");
+		DatabaseLogService.logEvent(LogEvent.PART, ctx);
+	}
+	
+	@Override
+	protected void onAction(String sender, String login, String hostname, String channel,
+			String action) {
+		BotContext ctx = new BotContext(this, channel, sender, login, hostname, action);
+		DatabaseLogService.logEvent(LogEvent.JOIN, ctx);
+	}
+	
+	@Override
+	protected void onTopic(String channel, String topic, String setBy, long date,
+			boolean changed) {
+		// TODO logging topic : hostname and co ?
+		BotContext ctx = new BotContext(this, channel, setBy, setBy, setBy, topic);
+		DatabaseLogService.logEvent(LogEvent.TOPIC, ctx);
+	}
+	
+	@Override
+	protected void onNickChange(String oldNick, String login, String hostname, String newNick) {
+		BotContext ctx = new BotContext(this, Const.CHANNEL, oldNick, login, hostname, newNick);
+		
+		DatabaseLogService.logEvent(LogEvent.NICK, ctx);
 	}
 	
 	@Override

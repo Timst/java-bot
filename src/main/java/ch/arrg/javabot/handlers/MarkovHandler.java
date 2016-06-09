@@ -29,6 +29,7 @@ public class MarkovHandler implements CommandHandler {
 			String userCanon = UserDb.canonize(user);
 			
 			if(!modelsByUser.containsKey(userCanon)) {
+				ctx.reply("(building markov model, this might take a while)");
 				MarkovModel model = ModelBuilder.buildModel(MODEL_DEPTH, userCanon);
 				stats(ctx, model);
 				modelsByUser.put(userCanon, model);
@@ -56,7 +57,6 @@ public class MarkovHandler implements CommandHandler {
 		String info = "Built markov model N=" + MODEL_DEPTH + " with " + size + " states and "
 				+ avg + " avg transitions.";
 		
-		ctx.reply(info);
 		System.out.println(info);
 	}
 	
