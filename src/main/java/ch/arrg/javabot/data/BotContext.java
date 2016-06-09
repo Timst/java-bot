@@ -53,4 +53,18 @@ public class BotContext implements Bot {
 	public void setRecord(String key, Object value) {
 		bot.getUserData(sender).setRecord(key, value);
 	}
+	
+	public void adminPause() {
+		bot.adminPause();
+	}
+	
+	public void adminUnpause() {
+		bot.adminUnpause();
+	}
+	
+	@Override
+	public boolean isPaused() {
+		return bot.isPaused();
+	}
+	
 }

@@ -20,6 +20,8 @@ public class BotImpl extends PircBot implements Bot {
 	
 	private BotLogic logic = new BotLogic();
 	
+	private boolean isPaused = false;
+	
 	public BotImpl() throws Exception {
 		setName(Const.BOT_NAME);
 		setLogin(Const.BOT_NAME);
@@ -100,5 +102,20 @@ public class BotImpl extends PircBot implements Bot {
 	public void quit() {
 		quitServer(Const.QUIT_MESSAGE);
 		System.exit(1);
+	}
+	
+	@Override
+	public void adminPause() {
+		isPaused = true;
+	}
+	
+	@Override
+	public void adminUnpause() {
+		isPaused = false;
+	}
+	
+	@Override
+	public boolean isPaused() {
+		return isPaused;
 	}
 }

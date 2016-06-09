@@ -44,5 +44,20 @@ public class CliTest {
 		public void quit() {
 			System.out.println("Quit");
 		}
+		
+		@Override
+		public void adminPause() {
+			// TODO generated Bot.adminPause
+		}
+		
+		@Override
+		public void adminUnpause() {
+			// TODO generated Bot.adminUnpause
+		}
+		
+		@Override
+		public boolean isPaused() {
+			return false; // TODO generated Bot.isPaused
+		}
 	}
 }

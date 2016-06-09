@@ -13,4 +13,10 @@ public interface Bot {
 	public UserData getUserData(String user);
 	
 	public void quit();
+	
+	public void adminPause();
+	
+	public void adminUnpause();
+	
+	public boolean isPaused();
 }

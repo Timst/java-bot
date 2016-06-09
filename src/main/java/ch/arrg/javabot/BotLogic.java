@@ -31,7 +31,6 @@ public class BotLogic {
 		addHandler(new TimeHandler());
 		addHandler(new RecordHandler());
 		addHandler(new UserInfoHandler());
-		// addHandler(new QuestionHandler());
 		addHandler(new GuessWhoHandler());
 		addHandler(new GuessWordHandler());
 		addHandler(new AdminHandler());
@@ -52,6 +51,11 @@ public class BotLogic {
 	}
 	
 	protected void onMessage(BotContext ctx) {
+		if(ctx.isPaused()) {
+			onMessagePauseMode(ctx);
+			return;
+		}
+		
 		String message = ctx.message.trim();
 		
 		CommandMatcher matcher = CommandMatcher.make("+help");
@@ -69,7 +73,23 @@ public class BotLogic {
 		}
 	}
 	
+	protected void onMessagePauseMode(BotContext ctx) {
+		for(CommandHandler handler : handlers.values()) {
+			if(!(handler instanceof AdminHandler))
+				continue;
+			
+			try {
+				handler.handle(ctx);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	public void onJoin(BotContext ctx) {
+		if(ctx.isPaused())
+			return;
+		
 		for(IrcEventHandler handler : eventHandlers.values()) {
 			try {
 				handler.onJoin(ctx.sender, ctx);
