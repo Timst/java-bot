@@ -1,10 +1,15 @@
 package ch.arrg.javabot.log;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
@@ -63,5 +68,54 @@ public class DatabaseLogService {
 		// Connect using db string
 		Connection connect = DriverManager.getConnection(Const.DB_CONN_STRING);
 		return connect;
+	}
+	
+	public static List<LogLine> readAllLog(String channel) {
+		List<LogLine> lines = new ArrayList<>();
+		
+		try (Connection conn = getConnection()) {
+			String query = "SELECT * FROM `main` WHERE type = 'pubmsg' "
+					+ "AND hidden = 'F' AND channel = ? ORDER BY time ASC";
+			PreparedStatement preparedStatement = conn.prepareStatement(query);
+			
+			preparedStatement.setString(1, channel);
+			ResultSet rs = preparedStatement.executeQuery();
+			
+			while(rs.next()) {
+				LogLine line = readLine(rs);
+				if(line != null) {
+					lines.add(line);
+				}
+			}
+			
+		} catch (ClassNotFoundException | SQLException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("Read " + lines.size() + " lines from database.");
+		return lines;
+	}
+	
+	private static LogLine readLine(ResultSet rs) throws SQLException,
+			UnsupportedEncodingException {
+		// (channel, name, time, message, type, hidden)
+		LogLine out = new LogLine();
+		out.id = rs.getInt("id");
+		out.user = rs.getString("name");
+		out.date = new Date(rs.getTimestamp("time").getTime());
+		out.kind = rs.getString("type");
+		out.message = fixEncoding(rs.getString("message"));
+		
+		return out;
+	}
+	
+	public static String fixEncoding(String maybeBroken) throws UnsupportedEncodingException {
+		boolean isBroken = true;
+		
+		if(isBroken) {
+			maybeBroken = new String(maybeBroken.getBytes("windows-1252"));
+		}
+		
+		return maybeBroken;
 	}
 }

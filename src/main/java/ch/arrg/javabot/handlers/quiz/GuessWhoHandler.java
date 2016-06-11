@@ -31,8 +31,8 @@ public class GuessWhoHandler extends AbstractQuizHandler {
 	@Override
 	public QuizQuestion getNewQuestion() {
 		while(true) {
-			int idx = (int) (Math.random() * LogLines.LOG_LINES.size());
-			LogLine tmp = LogLines.LOG_LINES.get(idx);
+			int idx = (int) (Math.random() * LogLines.getLogLines().size());
+			LogLine tmp = LogLines.getLogLines().get(idx);
 			if("pubmsg".equals(tmp.kind)) {
 				if(tmp.message.length() > 20) {
 					return new GuessWhoQuestion(tmp);

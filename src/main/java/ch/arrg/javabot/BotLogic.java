@@ -11,6 +11,7 @@ import ch.arrg.javabot.handlers.AdminHandler;
 import ch.arrg.javabot.handlers.HelloHandler;
 import ch.arrg.javabot.handlers.MarkovHandler;
 import ch.arrg.javabot.handlers.MemoHandler;
+import ch.arrg.javabot.handlers.QuoteLogHandler;
 import ch.arrg.javabot.handlers.RecordHandler;
 import ch.arrg.javabot.handlers.TimeHandler;
 import ch.arrg.javabot.handlers.UserInfoHandler;
@@ -18,6 +19,9 @@ import ch.arrg.javabot.handlers.YoutubeHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWhoHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
 import ch.arrg.javabot.util.CommandMatcher;
+
+// TODO MissedChatsHandler : on join, indicates how many lines you've missed
+// TODO ImageDetectionHandler : automatic image description 
 
 public class BotLogic {
 	
@@ -37,6 +41,7 @@ public class BotLogic {
 		addHandler(new YoutubeHandler());
 		addHandler(new MarkovHandler());
 		addHandler(new MemoHandler());
+		addHandler(new QuoteLogHandler());
 		
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);

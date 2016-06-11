@@ -28,7 +28,7 @@ public class GuessWordHandler extends AbstractQuizHandler {
 	
 	@Override
 	public QuizQuestion getNewQuestion() {
-		return new GuessWordQuestion(LogLines.LOG_LINES);
+		return new GuessWordQuestion(LogLines.getLogLines());
 	}
 	
 	@Override

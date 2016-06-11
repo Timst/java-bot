@@ -156,11 +156,11 @@ public class MarkovHandler implements CommandHandler {
 			
 			HashMap<Words, List<Words>> out = new HashMap<Words, List<Words>>();
 			
-			for(LogLine line : LogLines.LOG_LINES) {
+			for(LogLine line : LogLines.getLogLines()) {
 				if(!line.kind.equals("pubmsg"))
 					continue;
 				
-				if(!line.user.toLowerCase().contains(user))
+				if(!line.user.toLowerCase().equals(user))
 					continue;
 				
 				readLine(out, line, depth);
