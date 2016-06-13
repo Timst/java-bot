@@ -22,6 +22,8 @@ import ch.arrg.javabot.util.CommandMatcher;
 
 // TODO MissedChatsHandler : on join, indicates how many lines you've missed
 // TODO ImageDetectionHandler : automatic image description 
+// TODO cash conversions
+// TODO steam URLs
 
 public class BotLogic {
 	

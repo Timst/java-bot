@@ -55,6 +55,7 @@ public class QuoteLogHandler implements CommandHandler {
 			ctx.reply("Quote not found");
 		} else {
 			// TODO Date formatting
+			
 			ctx.reply(line.user + " on " + line.date + ": " + line.message);
 		}
 	}

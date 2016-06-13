@@ -27,6 +27,7 @@ public class MarkovHandler implements CommandHandler {
 		if(matcher.matches(ctx.message)) {
 			String user = matcher.nextWord();
 			String userCanon = UserDb.canonize(user);
+			String begin = matcher.remaining();
 			
 			if(!modelsByUser.containsKey(userCanon)) {
 				ctx.reply("(building markov model, this might take a while)");
@@ -36,14 +37,24 @@ public class MarkovHandler implements CommandHandler {
 			}
 			
 			String sentence = "";
+			int tries = 10;
 			do {
-				sentence = modelsByUser.get(userCanon).predict();
-			} while(sentence != null && sentence.length() < 50);
+				sentence = modelsByUser.get(userCanon).predict(begin);
+				if(sentence == null || sentence.equals("") || sentence.equals(begin + " ")) {
+					sentence = null;
+					break;
+				}
+				tries--;
+			} while(sentence.length() < 50 && tries > 0);
 			
 			if(sentence == null)
 				ctx.reply("Not enough data.");
-			else
-				ctx.reply(user + ": " + sentence);
+			else {
+				if(user.equals("all"))
+					ctx.reply(sentence);
+				else
+					ctx.reply(user + ": " + sentence);
+			}
 		}
 	}
 	
@@ -90,8 +101,36 @@ public class MarkovHandler implements CommandHandler {
 			this.probs = probs;
 		}
 		
+		public String predict(String sentence) {
+			sentence = sentence.toLowerCase();
+			
+			if(probs.size() == 0) {
+				return null;
+			}
+			
+			String[] words = sentence.split(" ");
+			// The last n words serve as the tuple, the remaining words are
+			// output as-is
+			StringBuilder prefix = new StringBuilder(sentence).append(" ");
+			Words begin = buildTuple(words);
+			String suffix = predict(begin);
+			return prefix.append(suffix).toString();
+		}
+		
+		private Words buildTuple(String[] words) {
+			Words tuple = emptyTuple();
+			int l = words.length;
+			
+			int min = Math.min(MODEL_DEPTH, words.length);
+			for(int i = 0; i < min; i++) {
+				tuple.words[MODEL_DEPTH - min + i] = words[l - min + i];
+			}
+			
+			return tuple;
+		}
+		
 		/** Predict a sentence from the model. */
-		public String predict() {
+		public String predict(Words start) {
 			if(probs.size() == 0) {
 				return null;
 			}
@@ -101,7 +140,7 @@ public class MarkovHandler implements CommandHandler {
 			// Go through states iteratively.
 			// Each new call to predictNextState will append one word to the
 			// output.
-			Words curr = emptyTuple();
+			Words curr = start;
 			while(curr != null) {
 				Words next = predictNextState(curr);
 				
@@ -160,7 +199,7 @@ public class MarkovHandler implements CommandHandler {
 				if(!line.kind.equals("pubmsg"))
 					continue;
 				
-				if(!line.user.toLowerCase().equals(user))
+				if(!line.user.toLowerCase().equals(user) && !user.equals("all"))
 					continue;
 				
 				readLine(out, line, depth);
@@ -170,7 +209,7 @@ public class MarkovHandler implements CommandHandler {
 		}
 		
 		private static void readLine(HashMap<Words, List<Words>> out, LogLine l, int depth) {
-			String[] words = l.message.split("\\s+");
+			String[] words = l.message.toLowerCase().split("\\s+");
 			String[] wordsPlusBlanks = new String[words.length + depth];
 			for(int i = 0; i < depth; i++) {
 				wordsPlusBlanks[i] = "";
