@@ -35,6 +35,7 @@ public class BotImpl extends PircBot implements Bot {
 	@Override
 	protected void onConnect() {
 		super.onConnect();
+		// TODO multi channel
 		joinChannel(Const.CHANNEL);
 	}
 	

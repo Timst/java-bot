@@ -24,6 +24,7 @@ import ch.arrg.javabot.util.CommandMatcher;
 // TODO ImageDetectionHandler : automatic image description 
 // TODO cash conversions
 // TODO steam URLs
+// TODO MoratoireHandler : pose des moratoires sur des sujets de conv
 
 public class BotLogic {
 	

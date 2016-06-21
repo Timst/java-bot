@@ -14,6 +14,8 @@ import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.LogLines;
 
 /** @author Thomas */
+// TODO be smarter in how words are segmented : salut, lulu should become
+// (salut, COMMA), (COMMA, lulu) not ("salut,", lulu)
 public class MarkovHandler implements CommandHandler {
 	
 	// Cache of models by user
