@@ -35,8 +35,7 @@ public class DatabaseLogService {
 	
 	public static void logEvent(LogEvent inType, BotContext ctx) {
 		try (Connection conn = getConnection()) {
-			String query = "INSERT INTO `"
-					+ Const.DB_TABLE
+			String query = "INSERT INTO `" + Const.DB_TABLE
 					+ "` (channel, name, time, message, type, hidden) VALUES (?, ?, ?, ?, ?, ?)";
 			PreparedStatement preparedStatement = conn.prepareStatement(query);
 			
@@ -79,14 +78,7 @@ public class DatabaseLogService {
 			PreparedStatement preparedStatement = conn.prepareStatement(query);
 			
 			preparedStatement.setString(1, channel);
-			ResultSet rs = preparedStatement.executeQuery();
-			
-			while(rs.next()) {
-				LogLine line = readLine(rs);
-				if(line != null) {
-					lines.add(line);
-				}
-			}
+			lines = executeSelect(preparedStatement);
 			
 		} catch (ClassNotFoundException | SQLException | UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -96,8 +88,22 @@ public class DatabaseLogService {
 		return lines;
 	}
 	
-	private static LogLine readLine(ResultSet rs) throws SQLException,
+	private static List<LogLine> executeSelect(PreparedStatement preparedStatement) throws SQLException,
 			UnsupportedEncodingException {
+		List<LogLine> lines = new ArrayList<>();
+		ResultSet rs = preparedStatement.executeQuery();
+		
+		while(rs.next()) {
+			LogLine line = readLine(rs);
+			if(line != null) {
+				lines.add(line);
+			}
+		}
+		
+		return lines;
+	}
+	
+	private static LogLine readLine(ResultSet rs) throws SQLException, UnsupportedEncodingException {
 		// (channel, name, time, message, type, hidden)
 		LogLine out = new LogLine();
 		out.id = rs.getInt("id");
@@ -117,5 +123,29 @@ public class DatabaseLogService {
 		}
 		
 		return maybeBroken;
+	}
+	
+	public static LogLine lastMessageByUser(String channel, String user) {
+		List<LogLine> lines = new ArrayList<>();
+		
+		try (Connection conn = getConnection()) {
+			String query = "SELECT * FROM `main` WHERE type = 'pubmsg' "
+					+ "AND hidden = 'F' AND channel = ? AND name LIKE ? ORDER BY time DESC LIMIT 1";
+			PreparedStatement preparedStatement = conn.prepareStatement(query);
+			
+			preparedStatement.setString(1, channel);
+			preparedStatement.setString(2, "%" + user + "%");
+			
+			lines = executeSelect(preparedStatement);
+			
+		} catch (ClassNotFoundException | SQLException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		if(lines.size() == 1) {
+			return lines.get(0);
+		} else {
+			return null;
+		}
 	}
 }

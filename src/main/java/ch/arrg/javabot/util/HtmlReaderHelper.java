@@ -13,18 +13,12 @@ public class HtmlReaderHelper {
 		try {
 			URL url = new URL(urlS);
 			conn = (HttpURLConnection) url.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+			return in;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
 		
-		try (BufferedReader in = new BufferedReader(new InputStreamReader(
-				conn.getInputStream()))) {
-			return in;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
 	}
 }

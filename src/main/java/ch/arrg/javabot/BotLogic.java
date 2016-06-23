@@ -9,10 +9,12 @@ import ch.arrg.javabot.data.UserData;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.handlers.AdminHandler;
 import ch.arrg.javabot.handlers.HelloHandler;
+import ch.arrg.javabot.handlers.LastSeenHandler;
 import ch.arrg.javabot.handlers.MarkovHandler;
 import ch.arrg.javabot.handlers.MemoHandler;
 import ch.arrg.javabot.handlers.QuoteLogHandler;
 import ch.arrg.javabot.handlers.RecordHandler;
+import ch.arrg.javabot.handlers.SteamUrlHandler;
 import ch.arrg.javabot.handlers.TimeHandler;
 import ch.arrg.javabot.handlers.UserInfoHandler;
 import ch.arrg.javabot.handlers.YoutubeHandler;
@@ -23,8 +25,9 @@ import ch.arrg.javabot.util.CommandMatcher;
 // TODO MissedChatsHandler : on join, indicates how many lines you've missed
 // TODO ImageDetectionHandler : automatic image description 
 // TODO cash conversions
-// TODO steam URLs
+// TODO auto pause main bot when beta bot joins
 // TODO MoratoireHandler : pose des moratoires sur des sujets de conv
+// TODO fix canonisation and check over all known nicks
 
 public class BotLogic {
 	
@@ -42,6 +45,8 @@ public class BotLogic {
 		addHandler(new GuessWordHandler());
 		addHandler(new AdminHandler());
 		addHandler(new YoutubeHandler());
+		addHandler(new SteamUrlHandler());
+		addHandler(new LastSeenHandler());
 		addHandler(new MarkovHandler());
 		addHandler(new MemoHandler());
 		addHandler(new QuoteLogHandler());
