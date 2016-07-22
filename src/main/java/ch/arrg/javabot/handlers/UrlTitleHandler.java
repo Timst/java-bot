@@ -7,6 +7,7 @@ import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HtmlReaderHelper;
 
+// TODO let users use +title after a link has been posted
 public class UrlTitleHandler implements CommandHandler {
 	
 	private final static String URL_REGEX = "(https?://\\S+)\\s?";

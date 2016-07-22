@@ -20,8 +20,7 @@ public class CliTest {
 					break;
 				}
 				
-				BotContext ctx = new BotContext(bot, "##braisnchat", "arrg_ch", "arrg",
-						"hostname", line);
+				BotContext ctx = new BotContext(bot, "##braisnchat", "arrg_ch", "arrg", "hostname", line);
 				ch.handle(ctx);
 			}
 		}
@@ -47,17 +46,17 @@ public class CliTest {
 		
 		@Override
 		public void adminPause() {
-			// TODO generated Bot.adminPause
+			// e
 		}
 		
 		@Override
 		public void adminUnpause() {
-			// TODO generated Bot.adminUnpause
+			// e
 		}
 		
 		@Override
 		public boolean isPaused() {
-			return false; // TODO generated Bot.isPaused
+			return false;
 		}
 	}
 }

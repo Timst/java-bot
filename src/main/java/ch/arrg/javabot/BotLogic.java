@@ -8,6 +8,7 @@ import ch.arrg.javabot.data.DataStoreUtils;
 import ch.arrg.javabot.data.UserData;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.handlers.AdminHandler;
+import ch.arrg.javabot.handlers.CurrencyHandler;
 import ch.arrg.javabot.handlers.HelloHandler;
 import ch.arrg.javabot.handlers.LastSeenHandler;
 import ch.arrg.javabot.handlers.MarkovHandler;
@@ -52,6 +53,7 @@ public class BotLogic {
 		addHandler(new MarkovHandler());
 		addHandler(new MemoHandler());
 		addHandler(new QuoteLogHandler());
+		addHandler(new CurrencyHandler());
 		
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
