@@ -44,7 +44,7 @@ public class CurrencyHandler implements CommandHandler {
 	
 	private void match(BotContext ctx, List<Pattern> pats, String msg, boolean isPrefix) {
 		for(Pattern p : pats) {
-			Matcher matcher = p.matcher(msg);
+			Matcher matcher = p.matcher(msg.toUpperCase());
 			if(matcher.find()) {
 				if(isPrefix) {
 					onMatch(ctx, matcher.group(1), matcher.group(2));
