@@ -16,6 +16,7 @@ import ch.arrg.javabot.handlers.QuoteLogHandler;
 import ch.arrg.javabot.handlers.RecordHandler;
 import ch.arrg.javabot.handlers.SteamUrlHandler;
 import ch.arrg.javabot.handlers.TimeHandler;
+import ch.arrg.javabot.handlers.UrlTitleHandler;
 import ch.arrg.javabot.handlers.UserInfoHandler;
 import ch.arrg.javabot.handlers.YoutubeHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWhoHandler;
@@ -45,6 +46,7 @@ public class BotLogic {
 		addHandler(new GuessWordHandler());
 		addHandler(new AdminHandler());
 		addHandler(new YoutubeHandler());
+		addHandler(new UrlTitleHandler());
 		addHandler(new SteamUrlHandler());
 		addHandler(new LastSeenHandler());
 		addHandler(new MarkovHandler());

@@ -15,6 +15,7 @@ import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
 
 // TODO Database logging as a handler ?
+// TODO fix that mess of having # in channel names escaped sometimes
 public class DatabaseLogService {
 	
 	public enum LogEvent {
