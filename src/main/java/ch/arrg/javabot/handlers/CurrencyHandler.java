@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HtmlReaderHelper;
+import ch.arrg.javabot.util.Logging;
 
 public class CurrencyHandler implements CommandHandler {
 	
@@ -66,7 +67,7 @@ public class CurrencyHandler implements CommandHandler {
 				ctx.reply("(" + amountS + " " + currencyS + " = " + amountEuroS + " EUR)");
 			}
 		} catch (NumberFormatException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 	}
 	
@@ -86,7 +87,7 @@ public class CurrencyHandler implements CommandHandler {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 		
 		return null;

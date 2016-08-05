@@ -21,7 +21,7 @@ public class HtmlReaderHelper {
 			BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			return in;
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 			return null;
 		}
 		
@@ -39,7 +39,7 @@ public class HtmlReaderHelper {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 		
 		return null;

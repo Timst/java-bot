@@ -6,25 +6,25 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-/**
- * Save/load user database to/from disk.
+import ch.arrg.javabot.util.Logging;
+
+/** Save/load user database to/from disk.
  * 
- * @author tgi
- */
+ * @author tgi */
 public class DataStoreUtils {
 	public static UserDb fromFile(String file) throws Exception {
 		File f = new File(file);
-		if (!f.exists()) {
+		if(!f.exists()) {
 			return new UserDb();
 		}
-
+		
 		try (FileInputStream fis = new FileInputStream(f)) {
 			try (ObjectInputStream ois = new ObjectInputStream(fis)) {
 				return (UserDb) ois.readObject();
 			}
 		}
 	}
-
+	
 	public static void toFile(String file, UserDb data) throws Exception {
 		try (FileOutputStream fos = new FileOutputStream(file)) {
 			try (ObjectOutputStream oos = new ObjectOutputStream(fos)) {
@@ -33,11 +33,9 @@ public class DataStoreUtils {
 			}
 		}
 	}
-
-	/**
-	 * This method registers a shutdownhook that will attempt to save user data
-	 * to disk on application shutdown.
-	 */
+	
+	/** This method registers a shutdownhook that will attempt to save user data
+	 * to disk on application shutdown. */
 	public static void saveOnQuit(final String file, final UserDb data) {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
@@ -45,7 +43,7 @@ public class DataStoreUtils {
 				try {
 					toFile(file, data);
 				} catch (Exception e) {
-					e.printStackTrace();
+					Logging.logException(e);
 				}
 			}
 		}));

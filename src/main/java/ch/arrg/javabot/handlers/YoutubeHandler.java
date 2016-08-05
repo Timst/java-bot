@@ -8,14 +8,14 @@ import java.util.regex.Pattern;
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HtmlReaderHelper;
+import ch.arrg.javabot.util.Logging;
 import ch.arrg.javabot.util.UrlHandlerHelper;
 import ch.arrg.javabot.util.UrlHandlerHelper.UrlMatcher;
 
 public class YoutubeHandler implements CommandHandler {
 	
 	private final static UrlMatcher URL_MATCHER = UrlHandlerHelper.makeMatcher(
-			"(https?://(.*?)youtube\\.com/watch\\?v=([a-zA-Z0-9_-]+))",
-			"(https?://(.*?)youtu\\.be/([a-zA-Z0-9_-]+))");
+			"(https?://(.*?)youtube\\.com/watch\\?v=([a-zA-Z0-9_-]+))", "(https?://(.*?)youtu\\.be/([a-zA-Z0-9_-]+))");
 	
 	private final static String TITLE_REGEX = "<title>(.*?) - YouTube</title>";
 	private final static Pattern TITLE_PAT = Pattern.compile(TITLE_REGEX);
@@ -53,7 +53,7 @@ public class YoutubeHandler implements CommandHandler {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 		
 		return null;

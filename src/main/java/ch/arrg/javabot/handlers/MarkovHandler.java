@@ -12,6 +12,7 @@ import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.log.LogLine;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.LogLines;
+import ch.arrg.javabot.util.Logging;
 
 /** @author Thomas */
 // TODO be smarter in how words are segmented : salut, lulu should become
@@ -67,10 +68,10 @@ public class MarkovHandler implements CommandHandler {
 		}
 		int size = model.probs.size();
 		double avg = sum / size;
-		String info = "Built markov model N=" + MODEL_DEPTH + " with " + size + " states and "
-				+ avg + " avg transitions.";
+		String info = "Built markov model N=" + MODEL_DEPTH + " with " + size + " states and " + avg
+				+ " avg transitions.";
 		
-		System.out.println(info);
+		Logging.log(info);
 	}
 	
 	@Override

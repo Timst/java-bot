@@ -3,6 +3,8 @@ package ch.arrg.javabot;
 import java.io.FileInputStream;
 import java.util.Properties;
 
+import ch.arrg.javabot.util.Logging;
+
 /** Application configuration.
  * 
  * @author tgi */
@@ -13,7 +15,7 @@ public class Const {
 		try (FileInputStream fis = new FileInputStream("data/config.properties")) {
 			props.load(fis);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 	}
 	

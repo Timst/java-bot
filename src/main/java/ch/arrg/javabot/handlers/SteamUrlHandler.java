@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HtmlReaderHelper;
+import ch.arrg.javabot.util.Logging;
 import ch.arrg.javabot.util.UrlHandlerHelper;
 import ch.arrg.javabot.util.UrlHandlerHelper.UrlMatcher;
 
@@ -52,7 +53,7 @@ public class SteamUrlHandler implements CommandHandler {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 		
 		return null;

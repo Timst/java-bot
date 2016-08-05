@@ -14,7 +14,7 @@ public class LogLines {
 			// TODO incrementally update from DB
 			LOG_LINES = DatabaseLogService.readAllLog("#braisnchat");
 		} catch (Exception e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 	}
 	

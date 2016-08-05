@@ -6,6 +6,7 @@ import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HandlerUtils;
+import ch.arrg.javabot.util.Logging;
 
 import com.google.common.collect.Lists;
 
@@ -16,8 +17,7 @@ public class HelloHandler implements CommandHandler {
 	private final List<String> helloWords;
 	
 	public HelloHandler() {
-		helloWords = Lists.newArrayList("Hello", "Hi", "Yo", "Lo", "Salut", "Bonjour",
-				"Guten Tag");
+		helloWords = Lists.newArrayList("Hello", "Hi", "Yo", "Lo", "Salut", "Bonjour", "Guten Tag");
 	}
 	
 	@Override
@@ -28,8 +28,7 @@ public class HelloHandler implements CommandHandler {
 				int cntPlusOne = updateCount(ctx);
 				String replyWord = HandlerUtils.random(helloWords);
 				
-				ctx.reply(replyWord + " " + ctx.sender + " ! You've greeted me " + cntPlusOne
-						+ " times.");
+				ctx.reply(replyWord + " " + ctx.sender + " ! You've greeted me " + cntPlusOne + " times.");
 			}
 		}
 	}
@@ -41,7 +40,7 @@ public class HelloHandler implements CommandHandler {
 			int i = Integer.parseInt(cnt);
 			cntPlusOne = i + 1;
 		} catch (NumberFormatException e) {
-			// Ignore
+			Logging.logException(e);
 		}
 		ctx.setRecord(KEY_HELLO_COUNT, "" + cntPlusOne);
 		return cntPlusOne;

@@ -23,12 +23,15 @@ import ch.arrg.javabot.handlers.YoutubeHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWhoHandler;
 import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
 import ch.arrg.javabot.util.CommandMatcher;
+import ch.arrg.javabot.util.Logging;
 
 // TODO MissedChatsHandler : on join, indicates how many lines you've missed
 // TODO ImageDetectionHandler : automatic image description 
 // TODO auto pause main bot when beta bot joins
 // TODO MoratoireHandler : pose des moratoires sur des sujets de conv
 // TODO fix canonisation and check over all known nicks
+// TODO contextual timezone conversions
+// TODO (unrelated) charts API for the log
 
 public class BotLogic {
 	
@@ -84,7 +87,7 @@ public class BotLogic {
 			try {
 				handler.handle(ctx);
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logging.logException(e);
 			}
 		}
 	}
@@ -97,7 +100,7 @@ public class BotLogic {
 			try {
 				handler.handle(ctx);
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logging.logException(e);
 			}
 		}
 	}
@@ -110,7 +113,7 @@ public class BotLogic {
 			try {
 				handler.onJoin(ctx.sender, ctx);
 			} catch (Exception e) {
-				e.printStackTrace();
+				Logging.logException(e);
 			}
 		}
 	}

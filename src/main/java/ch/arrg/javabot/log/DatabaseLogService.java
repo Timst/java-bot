@@ -13,6 +13,7 @@ import java.util.List;
 
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
+import ch.arrg.javabot.util.Logging;
 
 // TODO Database logging as a handler ?
 // TODO fix that mess of having # in channel names escaped sometimes
@@ -57,7 +58,7 @@ public class DatabaseLogService {
 			preparedStatement.executeUpdate();
 			
 		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 	}
 	
@@ -82,10 +83,10 @@ public class DatabaseLogService {
 			lines = executeSelect(preparedStatement);
 			
 		} catch (ClassNotFoundException | SQLException | UnsupportedEncodingException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 		
-		System.out.println("Read " + lines.size() + " lines from database.");
+		Logging.log("Read " + lines.size() + " lines from database.");
 		return lines;
 	}
 	
@@ -140,7 +141,7 @@ public class DatabaseLogService {
 			lines = executeSelect(preparedStatement);
 			
 		} catch (ClassNotFoundException | SQLException | UnsupportedEncodingException e) {
-			e.printStackTrace();
+			Logging.logException(e);
 		}
 		
 		if(lines.size() == 1) {
