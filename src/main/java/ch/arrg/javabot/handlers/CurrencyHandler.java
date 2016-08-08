@@ -27,8 +27,8 @@ public class CurrencyHandler implements CommandHandler {
 	private static void makePatterns() {
 		for(String curr : CURRENCIES) {
 			String currWithParen = "(" + Pattern.quote(curr) + ")";
-			String regexPrefix = currWithParen + " ?" + NUM_REGEX;
-			String regexSuffix = NUM_REGEX + " ?" + currWithParen;
+			String regexPrefix = "\\b" + currWithParen + " ?" + NUM_REGEX + "\\b";
+			String regexSuffix = "\\b" + NUM_REGEX + " ?" + currWithParen + "\\b";
 			
 			PREFIX.add(Pattern.compile(regexPrefix));
 			SUFFIX.add(Pattern.compile(regexSuffix));
