@@ -14,9 +14,6 @@ import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.LogLines;
 import ch.arrg.javabot.util.Logging;
 
-/** @author Thomas */
-// TODO be smarter in how words are segmented : salut, lulu should become
-// (salut, COMMA), (COMMA, lulu) not ("salut,", lulu)
 public class MarkovHandler implements CommandHandler {
 	
 	// Cache of models by user
@@ -111,7 +108,7 @@ public class MarkovHandler implements CommandHandler {
 				return null;
 			}
 			
-			String[] words = sentence.split(" ");
+			String[] words = ModelBuilder.smartSplit(sentence);
 			// The last n words serve as the tuple, the remaining words are
 			// output as-is
 			StringBuilder prefix = new StringBuilder(sentence).append(" ");
@@ -126,7 +123,7 @@ public class MarkovHandler implements CommandHandler {
 			
 			int min = Math.min(MODEL_DEPTH, words.length);
 			for(int i = 0; i < min; i++) {
-				tuple.words[MODEL_DEPTH - min + i] = words[l - min + i];
+				tuple.words[MODEL_DEPTH - min + i] = words[l - min + i].trim();
 			}
 			
 			return tuple;
@@ -148,18 +145,28 @@ public class MarkovHandler implements CommandHandler {
 				Words next = predictNextState(curr);
 				
 				if(next != null) {
-					out.append(next.lastWord()).append(" ");
+					String newWord = next.lastWord();
+					
+					out.append(newWord).append(" ");
+					
+					if(newWord.equals(".")) {
+						break;
+					}
 				}
 				
 				// Break off long sentences
-				if(out.length() > 300) {
+				if(out.length() > 200) {
 					break;
 				}
 				
 				curr = next;
 			}
 			
-			return out.toString();
+			String outStr = out.toString();
+			outStr = outStr.replaceAll(" ([,.\\)'])", "$1");
+			outStr = outStr.replaceAll("(') ", "$1");
+			
+			return outStr;
 		}
 		
 		/** Initial seed is the empty tuple, with the proper size. */
@@ -194,6 +201,11 @@ public class MarkovHandler implements CommandHandler {
 	
 	private static class ModelBuilder {
 		
+		// public static String[] splitToWords(String sentence) {
+		// String[] words = sentence.toLowerCase().split("(\\s|\\b)+");
+		//
+		// }
+		
 		public static MarkovModel buildModel(int depth, String user) {
 			
 			HashMap<Words, List<Words>> out = new HashMap<Words, List<Words>>();
@@ -211,14 +223,28 @@ public class MarkovHandler implements CommandHandler {
 			return new MarkovModel(out);
 		}
 		
+		public static String[] smartSplit(String sentence) {
+			// TODO rebuild capitalisation on sentence construction
+			String[] tokens = sentence.toLowerCase().split("\\b");
+			List<String> out = new ArrayList<>(tokens.length);
+			for(String token : tokens) {
+				String trim = token.trim();
+				if(trim.equals(""))
+					continue;
+				out.add(trim);
+			}
+			
+			return out.toArray(new String[out.size()]);
+		}
+		
 		private static void readLine(HashMap<Words, List<Words>> out, LogLine l, int depth) {
-			String[] words = l.message.toLowerCase().split("\\s+");
+			String[] words = smartSplit(l.message);
 			String[] wordsPlusBlanks = new String[words.length + depth];
 			for(int i = 0; i < depth; i++) {
 				wordsPlusBlanks[i] = "";
 			}
 			for(int i = 0; i < words.length; i++) {
-				wordsPlusBlanks[i + depth] = words[i];
+				wordsPlusBlanks[i + depth] = words[i].trim();
 			}
 			
 			Words prev = null;
