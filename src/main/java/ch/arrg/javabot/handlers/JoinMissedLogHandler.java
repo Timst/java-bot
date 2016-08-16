@@ -7,7 +7,7 @@ import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.log.DatabaseLogService;
 import ch.arrg.javabot.log.LogLine;
 
-// TODO make opt-in ?
+// TODO make private messages opt-in
 
 public class JoinMissedLogHandler implements IrcEventHandler {
 	

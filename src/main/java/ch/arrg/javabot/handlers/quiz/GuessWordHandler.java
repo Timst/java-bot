@@ -110,14 +110,14 @@ public class GuessWordHandler extends AbstractQuizHandler {
 		}
 		
 		private static String[] splitLine(LogLine tmp) {
-			// TODO improve what a 'word' is
+			// TODO improve what a 'word' is (use \b ?)
 			return tmp.message.split("[\\s(\\),.:!?\\[\\]<>]");
 		}
 		
 		@Override
 		public void success(BotContext ctx, int score) {
-			ctx.reply("Correct ! The word was \"" + missingWord + "\". " + ctx.sender
-					+ " now has " + score + ". Next question...");
+			ctx.reply("Correct ! The word was \"" + missingWord + "\". " + ctx.sender + " now has " + score
+					+ ". Next question...");
 		}
 		
 		@Override

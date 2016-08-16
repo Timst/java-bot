@@ -13,7 +13,7 @@ import ch.arrg.javabot.util.Logging;
 
 public class AdminHandler implements CommandHandler {
 	
-	// TODO make configurable
+	// TODO make admin names configurable
 	private static final String ADMIN_NAME = "arrg";
 	
 	@Override
@@ -90,6 +90,7 @@ public class AdminHandler implements CommandHandler {
 	}
 	
 	private static boolean isAdmin(BotContext ctx) {
+		// TODO require login for admin actions
 		return UserDb.canonize(ctx.sender).equals(ADMIN_NAME);
 	}
 	
@@ -100,7 +101,7 @@ public class AdminHandler implements CommandHandler {
 	
 	@Override
 	public void help(BotContext ctx) {
-		// TODO dynamic help
+		// TODO complete help for admin command
 		ctx.reply("Administration commands: quit");
 	}
 }

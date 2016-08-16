@@ -12,7 +12,7 @@ import ch.arrg.javabot.util.HandlerUtils;
 
 public class QuoteLogHandler implements CommandHandler {
 	
-	// TODO make configurable
+	// TODO make log url regex configurable
 	Pattern LOG_REGEX = Pattern.compile("http://braisn.sarcasme.org/braisnchat-log/#id-(\\d+)");
 	
 	@Override

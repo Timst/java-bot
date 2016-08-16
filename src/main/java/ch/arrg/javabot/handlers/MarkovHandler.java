@@ -89,6 +89,8 @@ public class MarkovHandler implements CommandHandler {
 	 * list at random. */
 	private static class MarkovModel {
 		private final int depth;
+		// TODO performance : create a HashMap of <unique words -> Int> to
+		// reduce memory usage, or maybe use String.intern.
 		private final Map<Words, List<Words>> probs;
 		
 		public MarkovModel(Map<Words, List<Words>> probs) {

@@ -30,9 +30,6 @@ import ch.arrg.javabot.util.Logging;
 
 // TODO ImageDetectionHandler : automatic image description 
 // TODO auto pause main bot when beta bot joins
-// TODO MoratoireHandler : pose des moratoires sur des sujets de conv
-// TODO fix canonisation and check over all known nicks
-// TODO (unrelated) charts API for the log
 
 public class BotLogic {
 	

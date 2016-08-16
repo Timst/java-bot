@@ -21,6 +21,7 @@ public class UserDb implements Serializable {
 		return users.get(canon);
 	}
 	
+	// TODO fix canonisation and check over all known nicks
 	public static String canonize(String user) {
 		if(user == null) {
 			return "";
