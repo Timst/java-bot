@@ -5,14 +5,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.IrcEventHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserData;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.util.CommandMatcher;
 
-public class MemoHandler implements CommandHandler, IrcEventHandler {
+public class MemoHandler implements IrcEventHandler {
 	
 	private static final String DATA_KEY = "MemoHandler";
 	
@@ -23,8 +22,7 @@ public class MemoHandler implements CommandHandler, IrcEventHandler {
 		if(matcher.matches(ctx.message)) {
 			String user = matcher.nextWord();
 			
-			MemoMessage msg = new MemoMessage(ctx.sender, user, new Date(),
-					matcher.remaining());
+			MemoMessage msg = new MemoMessage(ctx.sender, user, new Date(), matcher.remaining());
 			storeMessage(ctx, msg);
 			
 			ctx.reply("Ok I'll tell " + user + " when xir get back.");

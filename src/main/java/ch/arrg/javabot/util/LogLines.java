@@ -12,6 +12,7 @@ public class LogLines {
 	static {
 		try {
 			// TODO incrementally update from DB
+			// or deprecate in favor of DLService
 			LOG_LINES = DatabaseLogService.readAllLog("#braisnchat");
 		} catch (Exception e) {
 			Logging.logException(e);

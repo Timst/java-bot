@@ -1,6 +1,5 @@
 package ch.arrg.javabot.handlers;
 
-import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.IrcEventHandler;
 import ch.arrg.javabot.data.BotContext;
@@ -10,7 +9,7 @@ import ch.arrg.javabot.log.LogLine;
 
 // TODO make opt-in ?
 
-public class JoinMissedLogHandler implements CommandHandler, IrcEventHandler {
+public class JoinMissedLogHandler implements IrcEventHandler {
 	
 	final static String OPT_OUT_RECORD = "no_missed_log";
 	

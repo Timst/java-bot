@@ -33,7 +33,6 @@ import ch.arrg.javabot.util.Logging;
 // TODO MoratoireHandler : pose des moratoires sur des sujets de conv
 // TODO fix canonisation and check over all known nicks
 // TODO (unrelated) charts API for the log
-// TODO names and help for event handlers
 
 public class BotLogic {
 	
