@@ -48,7 +48,7 @@ public class JoinMissedLogHandler implements CommandHandler, IrcEventHandler {
 	
 	public void help(BotContext ctx) {
 		ctx.reply("Tells you how much log you've missed when you join.");
-		ctx.reply("Disable with +record no_missed_log true");
+		ctx.reply("Disable with +record set no_missed_log true");
 	}
 	
 	@Override

@@ -1,20 +1,16 @@
 package ch.arrg.javabot.handlers;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
+import ch.arrg.javabot.log.DatabaseLogService;
 import ch.arrg.javabot.log.LogLine;
 import ch.arrg.javabot.util.CommandMatcher;
-import ch.arrg.javabot.util.LogLines;
+import ch.arrg.javabot.util.HandlerUtils;
 
 public class QuoteLogHandler implements CommandHandler {
-	
-	// TODO do not store a private map
-	private Map<Integer, LogLine> lines = null;
 	
 	// TODO make configurable
 	Pattern LOG_REGEX = Pattern.compile("http://braisn.sarcasme.org/braisnchat-log/#id-(\\d+)");
@@ -46,24 +42,11 @@ public class QuoteLogHandler implements CommandHandler {
 	}
 	
 	private void quote(BotContext ctx, Integer lineId) {
-		if(lines == null) {
-			initMap();
-		}
-		
-		LogLine line = lines.get(lineId);
+		LogLine line = DatabaseLogService.getById(ctx.channel, lineId);
 		if(line == null) {
 			ctx.reply("Quote not found");
 		} else {
-			// TODO Date formatting
-			
-			ctx.reply(line.user + " on " + line.date + ": " + line.message);
-		}
-	}
-	
-	private void initMap() {
-		lines = new HashMap<>();
-		for(LogLine line : LogLines.getLogLines()) {
-			lines.put(line.id, line);
+			ctx.reply(line.user + " on " + HandlerUtils.prettyDate(line.date) + ": " + line.message);
 		}
 	}
 	

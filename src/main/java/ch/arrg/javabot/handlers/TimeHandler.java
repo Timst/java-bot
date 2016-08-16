@@ -162,7 +162,7 @@ public class TimeHandler implements CommandHandler {
 	public void help(BotContext ctx) {
 		ctx.reply("Get timezone aware time");
 		ctx.reply("Use +time <timezone> to get the time of a particular timezone.");
-		ctx.reply("If your timezone is recorded (+record tz <yourTimeZone>), you can just use +time.");
+		ctx.reply("If your timezone is recorded (+record set tz <yourTimeZone>), you can just use +time.");
 	}
 	
 	private static class TimeRequest {

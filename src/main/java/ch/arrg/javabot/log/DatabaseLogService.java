@@ -176,4 +176,28 @@ public class DatabaseLogService {
 	public static String escapeChannel(String channel) {
 		return channel.substring(1);
 	}
+	
+	public static LogLine getById(String channel, Integer lineId) {
+		List<LogLine> lines = new ArrayList<>();
+		
+		try (Connection conn = getConnection()) {
+			String query = "SELECT * FROM `main` WHERE type = 'pubmsg' "
+					+ "AND hidden = 'F' AND channel = ? AND id = ?";
+			PreparedStatement preparedStatement = conn.prepareStatement(query);
+			
+			preparedStatement.setString(1, channel);
+			preparedStatement.setInt(2, lineId);
+			
+			lines = executeSelect(preparedStatement);
+			
+		} catch (ClassNotFoundException | SQLException | UnsupportedEncodingException e) {
+			Logging.logException(e);
+		}
+		
+		if(lines.size() == 1) {
+			return lines.get(0);
+		} else {
+			return null;
+		}
+	}
 }
