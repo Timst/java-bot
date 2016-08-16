@@ -19,7 +19,7 @@ public class Const {
 		}
 	}
 	
-	private static String str(String key) {
+	public static String str(String key) {
 		return props.getProperty(key);
 	}
 	

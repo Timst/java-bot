@@ -15,6 +15,7 @@ public class RecordHandler implements CommandHandler {
 	
 	public RecordHandler() {
 		allowedRecords.add(TimeHandler.TZ_RECORD);
+		allowedRecords.add(JoinMissedLogHandler.OPT_OUT_RECORD);
 	}
 	
 	@Override

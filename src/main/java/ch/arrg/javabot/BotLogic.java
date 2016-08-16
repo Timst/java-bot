@@ -12,6 +12,7 @@ import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.handlers.AdminHandler;
 import ch.arrg.javabot.handlers.CurrencyHandler;
 import ch.arrg.javabot.handlers.HelloHandler;
+import ch.arrg.javabot.handlers.JoinMissedLogHandler;
 import ch.arrg.javabot.handlers.LastSeenHandler;
 import ch.arrg.javabot.handlers.MarkovHandler;
 import ch.arrg.javabot.handlers.MemoHandler;
@@ -27,12 +28,12 @@ import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.Logging;
 
-// TODO MissedChatsHandler : on join, indicates how many lines you've missed
 // TODO ImageDetectionHandler : automatic image description 
 // TODO auto pause main bot when beta bot joins
 // TODO MoratoireHandler : pose des moratoires sur des sujets de conv
 // TODO fix canonisation and check over all known nicks
 // TODO (unrelated) charts API for the log
+// TODO names and help for event handlers
 
 public class BotLogic {
 	
@@ -58,6 +59,7 @@ public class BotLogic {
 		addHandler(new MemoHandler());
 		addHandler(new QuoteLogHandler());
 		addHandler(new CurrencyHandler());
+		addEventHandler(new JoinMissedLogHandler());
 		
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
@@ -69,6 +71,10 @@ public class BotLogic {
 		if(h instanceof IrcEventHandler) {
 			eventHandlers.put(h.getName(), (IrcEventHandler) h);
 		}
+	}
+	
+	private void addEventHandler(IrcEventHandler h) {
+		eventHandlers.put(h.getClass().getName(), h);
 	}
 	
 	protected void onMessage(BotContext ctx) {

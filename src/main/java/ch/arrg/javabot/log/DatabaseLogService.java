@@ -16,7 +16,6 @@ import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.Logging;
 
 // TODO Database logging as a handler ?
-// TODO fix that mess of having # in channel names escaped sometimes
 public class DatabaseLogService {
 	
 	public enum LogEvent {
@@ -149,5 +148,32 @@ public class DatabaseLogService {
 		} else {
 			return null;
 		}
+	}
+	
+	public static int getNumberOfMessagesSince(String channel, int lastId) {
+		
+		try (Connection conn = getConnection()) {
+			String query = "SELECT COUNT(*) FROM `main` WHERE type = 'pubmsg' "
+					+ "AND hidden = 'F' AND channel = ? AND id > ?";
+			PreparedStatement preparedStatement = conn.prepareStatement(query);
+			
+			preparedStatement.setString(1, channel);
+			preparedStatement.setInt(2, lastId);
+			
+			ResultSet rs = preparedStatement.executeQuery();
+			if(rs.next()) {
+				return rs.getInt(1);
+			}
+			
+		} catch (ClassNotFoundException | SQLException e) {
+			Logging.logException(e);
+		}
+		
+		throw new IllegalStateException();
+	}
+	
+	// TODO fix that mess of having # in channel names escaped sometimes
+	public static String escapeChannel(String channel) {
+		return channel.substring(1);
 	}
 }
