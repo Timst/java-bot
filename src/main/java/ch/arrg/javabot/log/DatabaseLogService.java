@@ -127,6 +127,8 @@ public class DatabaseLogService {
 	}
 	
 	public static LogLine lastMessageByUser(String channel, String user) {
+		channel = escapeChannel(channel);
+		
 		List<LogLine> lines = new ArrayList<>();
 		
 		try (Connection conn = getConnection()) {
@@ -151,6 +153,7 @@ public class DatabaseLogService {
 	}
 	
 	public static int getNumberOfMessagesSince(String channel, int lastId) {
+		channel = escapeChannel(channel);
 		
 		try (Connection conn = getConnection()) {
 			String query = "SELECT COUNT(*) FROM `main` WHERE type = 'pubmsg' "
@@ -173,11 +176,15 @@ public class DatabaseLogService {
 	}
 	
 	// TODO fix that mess of having # in channel names escaped sometimes
-	public static String escapeChannel(String channel) {
-		return channel.substring(1);
+	private static String escapeChannel(String channel) {
+		if(channel.equals("##braisnchat"))
+			return "#braisnchat";
+		return channel;
 	}
 	
 	public static LogLine getById(String channel, Integer lineId) {
+		channel = escapeChannel(channel);
+		
 		List<LogLine> lines = new ArrayList<>();
 		
 		try (Connection conn = getConnection()) {

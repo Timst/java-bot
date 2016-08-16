@@ -22,8 +22,7 @@ public class JoinMissedLogHandler implements CommandHandler, IrcEventHandler {
 		}
 		
 		String userCanon = UserDb.canonize(user);
-		LogLine lastMsg = DatabaseLogService
-				.lastMessageByUser(DatabaseLogService.escapeChannel(ctx.channel), userCanon);
+		LogLine lastMsg = DatabaseLogService.lastMessageByUser(ctx.channel, userCanon);
 		if(lastMsg != null) {
 			sendResponse(user, ctx, lastMsg);
 		}
@@ -33,8 +32,7 @@ public class JoinMissedLogHandler implements CommandHandler, IrcEventHandler {
 		int lastId = lastMsg.id;
 		String urlPattern = Const.str("JoinMissedLogHandler.logurl");
 		String url = urlPattern.replaceAll("%s", "" + lastId);
-		int missedLines = DatabaseLogService.getNumberOfMessagesSince(DatabaseLogService.escapeChannel(ctx.channel),
-				lastId);
+		int missedLines = DatabaseLogService.getNumberOfMessagesSince(ctx.channel, lastId);
 		
 		if(missedLines > 0) {
 			ctx.sendMsg(user, "Heya. You've missed " + missedLines + " lines.");

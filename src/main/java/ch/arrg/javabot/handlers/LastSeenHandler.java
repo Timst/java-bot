@@ -32,8 +32,7 @@ public class LastSeenHandler implements CommandHandler {
 	}
 	
 	private Date getLastSeenTime(String channel, String user) {
-		String channelEscaped = DatabaseLogService.escapeChannel(channel);
-		LogLine msg = DatabaseLogService.lastMessageByUser(channelEscaped, user);
+		LogLine msg = DatabaseLogService.lastMessageByUser(channel, user);
 		if(msg != null) {
 			return msg.date;
 		}
