@@ -19,4 +19,6 @@ public interface Bot {
 	public void adminUnpause();
 	
 	public boolean isPaused();
+	
+	public Boolean toggleHandler(String handlerName);
 }

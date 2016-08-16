@@ -42,8 +42,7 @@ public class BotImpl extends PircBot implements Bot {
 	}
 	
 	@Override
-	protected void onMessage(String channel, String sender, String login, String hostname,
-			String message) {
+	protected void onMessage(String channel, String sender, String login, String hostname, String message) {
 		BotContext ctx = new BotContext(this, channel, sender, login, hostname, message);
 		
 		DatabaseLogService.logEvent(LogEvent.MESSAGE, ctx);
@@ -70,15 +69,13 @@ public class BotImpl extends PircBot implements Bot {
 	}
 	
 	@Override
-	protected void onAction(String sender, String login, String hostname, String channel,
-			String action) {
+	protected void onAction(String sender, String login, String hostname, String channel, String action) {
 		BotContext ctx = new BotContext(this, channel, sender, login, hostname, action);
 		DatabaseLogService.logEvent(LogEvent.JOIN, ctx);
 	}
 	
 	@Override
-	protected void onTopic(String channel, String topic, String setBy, long date,
-			boolean changed) {
+	protected void onTopic(String channel, String topic, String setBy, long date, boolean changed) {
 		// TODO logging topic : hostname and co ?
 		BotContext ctx = new BotContext(this, channel, setBy, setBy, setBy, topic);
 		DatabaseLogService.logEvent(LogEvent.TOPIC, ctx);
@@ -120,5 +117,10 @@ public class BotImpl extends PircBot implements Bot {
 	@Override
 	public boolean isPaused() {
 		return isPaused;
+	}
+	
+	@Override
+	public Boolean toggleHandler(String handlerName) {
+		return logic.toggleHandler(handlerName);
 	}
 }

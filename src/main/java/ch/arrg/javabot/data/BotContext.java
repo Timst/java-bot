@@ -11,8 +11,7 @@ public class BotContext implements Bot {
 	public final String hostname;
 	public final String message;
 	
-	public BotContext(Bot bot, String channel, String sender, String login, String hostname,
-			String message) {
+	public BotContext(Bot bot, String channel, String sender, String login, String hostname, String message) {
 		this.bot = bot;
 		this.channel = channel;
 		this.sender = sender;
@@ -65,6 +64,10 @@ public class BotContext implements Bot {
 	@Override
 	public boolean isPaused() {
 		return bot.isPaused();
+	}
+	
+	public Boolean toggleHandler(String handlerName) {
+		return bot.toggleHandler(handlerName);
 	}
 	
 }

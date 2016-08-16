@@ -46,6 +46,18 @@ public class AdminHandler implements CommandHandler {
 			if("exception".equals(action)) {
 				printException(ctx);
 			}
+			
+			if("toggle".equals(action)) {
+				String handlerName = matcher.nextWord();
+				Boolean result = ctx.toggleHandler(handlerName);
+				if(result == null) {
+					ctx.reply("No such handler");
+				} else if(result) {
+					ctx.reply("Handler enabled.");
+				} else {
+					ctx.reply("Handler disabled.");
+				}
+			}
 		}
 	}
 	

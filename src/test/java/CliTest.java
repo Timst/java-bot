@@ -58,5 +58,10 @@ public class CliTest {
 		public boolean isPaused() {
 			return false;
 		}
+		
+		@Override
+		public Boolean toggleHandler(String handlerName) {
+			return null;
+		}
 	}
 }

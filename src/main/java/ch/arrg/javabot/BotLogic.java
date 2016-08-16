@@ -1,6 +1,8 @@
 package ch.arrg.javabot;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import ch.arrg.javabot.data.BotContext;
@@ -30,12 +32,12 @@ import ch.arrg.javabot.util.Logging;
 // TODO auto pause main bot when beta bot joins
 // TODO MoratoireHandler : pose des moratoires sur des sujets de conv
 // TODO fix canonisation and check over all known nicks
-// TODO contextual timezone conversions
 // TODO (unrelated) charts API for the log
 
 public class BotLogic {
 	
 	private Map<String, CommandHandler> handlers = new TreeMap<>();
+	private Set<CommandHandler> disabled = new HashSet<>();
 	private Map<String, IrcEventHandler> eventHandlers = new TreeMap<>();
 	
 	private final UserDb userDb;
@@ -85,6 +87,9 @@ public class BotLogic {
 		
 		for(CommandHandler handler : handlers.values()) {
 			try {
+				if(disabled.contains(handler))
+					continue;
+				
 				handler.handle(ctx);
 			} catch (Exception e) {
 				Logging.logException(e);
@@ -136,6 +141,20 @@ public class BotLogic {
 	
 	public UserData getUserData(String user) {
 		return userDb.getOrCreateUserData(user);
+	}
+	
+	public Boolean toggleHandler(String handlerName) {
+		CommandHandler handler = handlers.get(handlerName);
+		if(handler == null)
+			return null;
+		
+		if(disabled.contains(handler)) {
+			disabled.remove(handler);
+			return true;
+		} else {
+			disabled.add(handler);
+			return false;
+		}
 	}
 	
 }
