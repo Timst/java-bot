@@ -21,8 +21,7 @@ public class TimeHandler implements CommandHandler {
 	
 	public static final String TZ_RECORD = "tz";
 	
-	// TODO this picks up "I ate 9 hats"
-	private final static String TIME_REGEX = "(\\d{1,2}) ?[h:.] ?(\\d{2})?\\b";
+	private final static String TIME_REGEX = "(\\d{1,2}) ?: ?(\\d{2})\\b";
 	private final static Pattern TIME_PAT = Pattern.compile(TIME_REGEX);
 	
 	// TODO make configurable or use people present in the chat's time zones

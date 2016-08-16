@@ -5,9 +5,12 @@ import java.util.List;
 
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
+import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.util.CommandMatcher;
 
 import com.google.common.base.Joiner;
+
+// TODO : only allow +record in private messages
 
 public class RecordHandler implements CommandHandler {
 	
@@ -25,14 +28,24 @@ public class RecordHandler implements CommandHandler {
 		if(matcher.matches(ctx.message)) {
 			String action = matcher.nextWord();
 			
-			if(allowedRecords.contains(action)) {
-				String value = matcher.nextWord();
-				ctx.setRecord(action, value);
-				ctx.reply("Okay I will remember.");
-			} else {
-				ctx.reply("This is now a known key, doot");
+			if("set".equals(action)) {
+				String key = matcher.nextWord();
+				if(allowedRecords.contains(key)) {
+					String value = matcher.nextWord();
+					ctx.setRecord(key, value);
+					ctx.reply("Okay I will remember.");
+				} else {
+					ctx.reply("This is not a known key, doot");
+				}
+			} else if("get".equals(action)) {
+				String key = matcher.nextWord();
+				String value = ctx.getRecordStr(key);
+				ctx.reply("Your value for <" + key + "> is <" + value + ">.");
+				
+			} else if("count".equals(action)) {
+				int keys = ctx.getUserData(UserDb.canonize(ctx.sender)).countKeys();
+				ctx.reply("I have " + keys + " records about you.");
 			}
-			
 		}
 	}
 	
@@ -43,8 +56,9 @@ public class RecordHandler implements CommandHandler {
 	
 	@Override
 	public void help(BotContext ctx) {
-		ctx.reply("Set info about yourself.");
-		ctx.reply("Use +record <key> <value> to set a record.");
+		ctx.reply("Set/get info about yourself.");
+		ctx.reply("Use +record set <key> <value> to set a record.");
+		ctx.reply("Use +record get <key> to read a record.");
 		String allowed = Joiner.on(", ").join(allowedRecords);
 		ctx.reply("Allowed records are: [" + allowed + "]");
 	}
