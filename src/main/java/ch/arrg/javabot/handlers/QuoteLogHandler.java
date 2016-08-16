@@ -16,8 +16,8 @@ public class QuoteLogHandler implements CommandHandler {
 	// TODO do not store a private map
 	private Map<Integer, LogLine> lines = null;
 	
-	Pattern LOG_REGEX = Pattern
-			.compile("http://braisn.sarcasme.org/braisnchat-log/#id-(\\d+)");
+	// TODO make configurable
+	Pattern LOG_REGEX = Pattern.compile("http://braisn.sarcasme.org/braisnchat-log/#id-(\\d+)");
 	
 	@Override
 	public void handle(BotContext ctx) {

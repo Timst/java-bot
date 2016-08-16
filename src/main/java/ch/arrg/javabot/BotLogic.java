@@ -59,7 +59,7 @@ public class BotLogic {
 		addHandler(new MemoHandler());
 		addHandler(new QuoteLogHandler());
 		addHandler(new CurrencyHandler());
-		addEventHandler(new JoinMissedLogHandler());
+		addHandler(new JoinMissedLogHandler());
 		
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
@@ -71,10 +71,6 @@ public class BotLogic {
 		if(h instanceof IrcEventHandler) {
 			eventHandlers.put(h.getName(), (IrcEventHandler) h);
 		}
-	}
-	
-	private void addEventHandler(IrcEventHandler h) {
-		eventHandlers.put(h.getClass().getName(), h);
 	}
 	
 	protected void onMessage(BotContext ctx) {

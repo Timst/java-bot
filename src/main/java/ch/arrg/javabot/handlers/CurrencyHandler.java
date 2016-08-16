@@ -15,7 +15,9 @@ import ch.arrg.javabot.util.Logging;
 public class CurrencyHandler implements CommandHandler {
 	
 	private final static String NUM_REGEX = "(\\d+([.,]\\d+)?)";
+	// TODO make configurable
 	private final static String[] CURRENCIES = { "GBP", "USD", "AUD", "NOK", "CHF", "£", "$" };
+	private final static String TARGET_CURRENCY = "EUR";
 	
 	private static List<Pattern> PREFIX = new ArrayList<>();
 	private static List<Pattern> SUFFIX = new ArrayList<>();
@@ -64,7 +66,7 @@ public class CurrencyHandler implements CommandHandler {
 			if(rate != null) {
 				double amountEuro = amount / rate;
 				String amountEuroS = String.format("%.2f", amountEuro);
-				ctx.reply("(" + amountS + " " + currencyS + " = " + amountEuroS + " EUR)");
+				ctx.reply("(" + amountS + " " + currencyS + " = " + amountEuroS + " " + TARGET_CURRENCY + ")");
 			}
 		} catch (NumberFormatException e) {
 			Logging.logException(e);

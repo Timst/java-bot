@@ -8,6 +8,8 @@ import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.log.DatabaseLogService;
 import ch.arrg.javabot.log.LogLine;
 
+// TODO make opt-in ?
+
 public class JoinMissedLogHandler implements CommandHandler, IrcEventHandler {
 	
 	final static String OPT_OUT_RECORD = "no_missed_log";

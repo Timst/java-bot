@@ -13,6 +13,9 @@ import ch.arrg.javabot.util.Logging;
 
 public class AdminHandler implements CommandHandler {
 	
+	// TODO make configurable
+	private static final String ADMIN_NAME = "arrg";
+	
 	@Override
 	public void handle(BotContext ctx) {
 		
@@ -87,7 +90,7 @@ public class AdminHandler implements CommandHandler {
 	}
 	
 	private static boolean isAdmin(BotContext ctx) {
-		return UserDb.canonize(ctx.sender).equals("arrg");
+		return UserDb.canonize(ctx.sender).equals(ADMIN_NAME);
 	}
 	
 	@Override
@@ -97,6 +100,7 @@ public class AdminHandler implements CommandHandler {
 	
 	@Override
 	public void help(BotContext ctx) {
+		// TODO dynamic help
 		ctx.reply("Administration commands: quit");
 	}
 }
