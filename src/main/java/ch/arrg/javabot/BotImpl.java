@@ -35,7 +35,7 @@ public class BotImpl extends PircBot implements Bot {
 	@Override
 	protected void onConnect() {
 		super.onConnect();
-		String[] chans = Const.CHANNEL.split(",");
+		String[] chans = Const.strArray("channels");
 		for(String chan : chans) {
 			joinChannel(chan);
 		}

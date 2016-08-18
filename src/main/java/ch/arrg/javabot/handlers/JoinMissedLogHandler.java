@@ -10,7 +10,6 @@ import ch.arrg.javabot.log.DatabaseLogService;
 import ch.arrg.javabot.log.LogLine;
 
 // TODO make private messages opt-in
-// TODO if N < threshold, display the messages in the conversation
 
 public class JoinMissedLogHandler implements IrcEventHandler {
 	
@@ -43,7 +42,7 @@ public class JoinMissedLogHandler implements IrcEventHandler {
 			if(missedLines <= VERBATIM_THRESHOLD) {
 				List<LogLine> lines = DatabaseLogService.getMessagesSinceId(ctx.channel, lastId);
 				for(LogLine line : lines) {
-					ctx.reply("> " + line.user + ": " + line.message);
+					ctx.sendMsg(user, "> " + line.user + ": " + line.message);
 				}
 			}
 			

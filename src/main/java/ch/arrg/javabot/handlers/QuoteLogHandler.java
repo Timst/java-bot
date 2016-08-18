@@ -4,6 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.arrg.javabot.CommandHandler;
+import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.log.DatabaseLogService;
 import ch.arrg.javabot.log.LogLine;
@@ -12,8 +13,8 @@ import ch.arrg.javabot.util.HandlerUtils;
 
 public class QuoteLogHandler implements CommandHandler {
 	
-	// TODO make log url regex configurable
-	Pattern LOG_REGEX = Pattern.compile("http://braisn.sarcasme.org/braisnchat-log/#id-(\\d+)");
+	/** Log URL pattern where the first match group is the log line id. */
+	Pattern LOG_REGEX = Pattern.compile(Const.str("QuoteLogHandler.logUrlPattern"));
 	
 	@Override
 	public void handle(BotContext ctx) {

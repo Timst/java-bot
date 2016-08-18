@@ -23,6 +23,10 @@ public class Const {
 		return props.getProperty(key);
 	}
 	
+	public static String[] strArray(String string) {
+		return str(string).split(",");
+	}
+	
 	private static int asInt(String key) {
 		return Integer.parseInt(props.getProperty(key));
 	}

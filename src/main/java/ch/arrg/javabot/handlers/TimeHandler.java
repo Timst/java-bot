@@ -2,7 +2,6 @@ package ch.arrg.javabot.handlers;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.arrg.javabot.CommandHandler;
+import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.Logging;
@@ -24,8 +24,7 @@ public class TimeHandler implements CommandHandler {
 	private final static String TIME_REGEX = "(\\d{1,2}) ?: ?(\\d{2})\\b";
 	private final static Pattern TIME_PAT = Pattern.compile(TIME_REGEX);
 	
-	// TODO make configurable or use people present in the chat's time zones
-	private final static List<String> outputZones = Arrays.asList("Europe/London", "Europe/Oslo", "Australia/Sydney");
+	private final static String[] outputZones = Const.strArray("TimeHandler.targetZones");
 	
 	@Override
 	public void handle(BotContext ctx) {

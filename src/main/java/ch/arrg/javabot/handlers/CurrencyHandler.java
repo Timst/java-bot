@@ -8,15 +8,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.arrg.javabot.CommandHandler;
+import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HtmlReaderHelper;
 import ch.arrg.javabot.util.Logging;
 
 public class CurrencyHandler implements CommandHandler {
 	
+	private final static String[] CURRENCIES = Const.strArray("CurrencyHandler.allowedCurrencies");
+	
 	private final static String NUM_REGEX = "(\\d+([.,]\\d+)?)";
-	// TODO make understood currencies configurable
-	private final static String[] CURRENCIES = { "GBP", "USD", "AUD", "NOK", "CHF", "£", "$" };
 	private final static String TARGET_CURRENCY = "EUR";
 	
 	private static List<Pattern> PREFIX = new ArrayList<>();
