@@ -1,5 +1,7 @@
 package ch.arrg.javabot.handlers;
 
+import java.util.List;
+
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.IrcEventHandler;
 import ch.arrg.javabot.data.BotContext;
@@ -8,10 +10,12 @@ import ch.arrg.javabot.log.DatabaseLogService;
 import ch.arrg.javabot.log.LogLine;
 
 // TODO make private messages opt-in
+// TODO if N < threshold, display the messages in the conversation
 
 public class JoinMissedLogHandler implements IrcEventHandler {
 	
 	final static String OPT_OUT_RECORD = "no_missed_log";
+	final static int VERBATIM_THRESHOLD = 10;
 	
 	@Override
 	public void onJoin(String user, BotContext ctx) {
@@ -35,6 +39,14 @@ public class JoinMissedLogHandler implements IrcEventHandler {
 		
 		if(missedLines > 0) {
 			ctx.sendMsg(user, "Heya. You've missed " + missedLines + " lines.");
+			
+			if(missedLines <= VERBATIM_THRESHOLD) {
+				List<LogLine> lines = DatabaseLogService.getMessagesSinceId(ctx.channel, lastId);
+				for(LogLine line : lines) {
+					ctx.reply("> " + line.user + ": " + line.message);
+				}
+			}
+			
 			ctx.sendMsg(user, "See log here : " + url);
 		}
 	}

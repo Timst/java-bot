@@ -175,6 +175,28 @@ public class DatabaseLogService {
 		throw new IllegalStateException();
 	}
 	
+	public static List<LogLine> getMessagesSinceId(String channel, int lastId) {
+		channel = escapeChannel(channel);
+		
+		List<LogLine> lines = new ArrayList<>();
+		
+		try (Connection conn = getConnection()) {
+			String query = "SELECT * FROM `main` WHERE type = 'pubmsg' "
+					+ "AND hidden = 'F' AND channel = ? AND id > ? ORDER BY id ASC";
+			PreparedStatement preparedStatement = conn.prepareStatement(query);
+			
+			preparedStatement.setString(1, channel);
+			preparedStatement.setInt(2, lastId);
+			
+			lines = executeSelect(preparedStatement);
+			
+		} catch (ClassNotFoundException | SQLException | UnsupportedEncodingException e) {
+			Logging.logException(e);
+		}
+		
+		return lines;
+	}
+	
 	// TODO fix that mess of having # in channel names escaped sometimes
 	private static String escapeChannel(String channel) {
 		if(channel.equals("##braisnchat"))
