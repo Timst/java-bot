@@ -29,15 +29,23 @@ public class CurrencyHandler implements CommandHandler {
 	
 	private static void makePatterns() {
 		for(String curr : CURRENCIES) {
+			String wb = needsWordBoundaries(curr) ? "\\b" : "";
+			
 			String currWithParen = "(" + Pattern.quote(curr) + ")";
-			String regexPrefix = "\\b" + currWithParen + " ?" + NUM_REGEX + "\\b";
-			String regexSuffix = "\\b" + NUM_REGEX + " ?" + currWithParen + "\\b";
+			String regexPrefix = wb + currWithParen + " ?" + NUM_REGEX + wb;
+			String regexSuffix = wb + NUM_REGEX + " ?" + currWithParen + wb;
 			
 			PREFIX.add(Pattern.compile(regexPrefix));
 			SUFFIX.add(Pattern.compile(regexSuffix));
 		}
 	}
 	
+	/** letter patterns need word boundaries so that for instance "I want 3
+	 * nokia phones" doesn't get matched as a currency. */
+	private static boolean needsWordBoundaries(String curr) {
+		return curr.matches("\\w+");
+	}
+
 	@Override
 	public void handle(BotContext ctx) {
 		String m = ctx.message;
