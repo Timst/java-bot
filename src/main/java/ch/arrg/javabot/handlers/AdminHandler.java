@@ -104,7 +104,7 @@ public class AdminHandler implements CommandHandler {
 	
 	@Override
 	public void help(BotContext ctx) {
-		// TODO complete help for admin command
-		ctx.reply("Administration commands: quit");
+		// TODO automatic help for admin command
+		ctx.reply("Administration commands: quit, pause, unpause, toggle, exception");
 	}
 }
