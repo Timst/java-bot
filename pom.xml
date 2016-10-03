@@ -27,6 +27,25 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.38</version>
 		</dependency>
+
+		<!-- Handler specific -->
+		<dependency>
+			<!-- API for steam community -->
+			<groupId>com.lukaspradel</groupId>
+			<artifactId>steam-web-api</artifactId>
+			<version>1.2</version>
+		</dependency>
+		<dependency>
+			<!-- API for storefront -->
+			<groupId>com.github.go-ive</groupId>
+			<artifactId>steam-api</artifactId>
+			<version>4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160810</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -51,8 +70,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.5.1</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 		</plugins>

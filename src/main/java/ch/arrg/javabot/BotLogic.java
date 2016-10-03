@@ -18,6 +18,7 @@ import ch.arrg.javabot.handlers.MarkovHandler;
 import ch.arrg.javabot.handlers.MemoHandler;
 import ch.arrg.javabot.handlers.QuoteLogHandler;
 import ch.arrg.javabot.handlers.RecordHandler;
+import ch.arrg.javabot.handlers.SteamHandler;
 import ch.arrg.javabot.handlers.SteamUrlHandler;
 import ch.arrg.javabot.handlers.TimeHandler;
 import ch.arrg.javabot.handlers.UrlTitleHandler;
@@ -28,8 +29,12 @@ import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.Logging;
 
-// TODO ImageDetectionHandler : automatic image description 
+// TODO ImageDetectionHandler : automatic image description
 // TODO auto pause main bot when beta bot joins
+// TODO time conversions (?) like bretton
+// TODO automatic summary of links ?
+// TODO images to ascii art
+// TODO random tweets
 
 public class BotLogic {
 	
@@ -52,6 +57,7 @@ public class BotLogic {
 		addHandler(new SteamUrlHandler());
 		addHandler(new LastSeenHandler());
 		addHandler(new MarkovHandler());
+		addHandler(new SteamHandler());
 		addHandler(new MemoHandler());
 		addHandler(new QuoteLogHandler());
 		addHandler(new CurrencyHandler());
