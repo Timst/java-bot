@@ -9,13 +9,13 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Joiner;
+
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.Logging;
-
-import com.google.common.base.Joiner;
 
 public class TimeHandler implements CommandHandler {
 	

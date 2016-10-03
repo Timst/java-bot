@@ -2,13 +2,13 @@ package ch.arrg.javabot.handlers;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.HandlerUtils;
 import ch.arrg.javabot.util.Logging;
-
-import com.google.common.collect.Lists;
 
 public class HelloHandler implements CommandHandler {
 	

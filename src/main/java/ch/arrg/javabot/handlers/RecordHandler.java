@@ -3,12 +3,12 @@ package ch.arrg.javabot.handlers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.base.Joiner;
+
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.util.CommandMatcher;
-
-import com.google.common.base.Joiner;
 
 // TODO : only allow +record in private messages
 

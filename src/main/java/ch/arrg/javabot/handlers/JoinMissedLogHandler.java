@@ -6,7 +6,7 @@ import ch.arrg.javabot.Const;
 import ch.arrg.javabot.IrcEventHandler;
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.UserDb;
-import ch.arrg.javabot.log.DatabaseLogService;
+import ch.arrg.javabot.log.DatabaseLogServiceProvider;
 import ch.arrg.javabot.log.LogLine;
 
 // TODO make private messages opt-in
@@ -24,7 +24,7 @@ public class JoinMissedLogHandler implements IrcEventHandler {
 		}
 		
 		String userCanon = UserDb.canonize(user);
-		LogLine lastMsg = DatabaseLogService.lastMessageByUser(ctx.channel, userCanon);
+		LogLine lastMsg = DatabaseLogServiceProvider.get().lastMessageByUser(ctx.channel, userCanon);
 		if(lastMsg != null) {
 			sendResponse(user, ctx, lastMsg);
 		}
@@ -34,13 +34,13 @@ public class JoinMissedLogHandler implements IrcEventHandler {
 		int lastId = lastMsg.id;
 		String urlPattern = Const.str("JoinMissedLogHandler.logurl");
 		String url = urlPattern.replaceAll("%s", "" + lastId);
-		int missedLines = DatabaseLogService.getNumberOfMessagesSince(ctx.channel, lastId);
+		int missedLines = DatabaseLogServiceProvider.get().getNumberOfMessagesSince(ctx.channel, lastId);
 		
 		if(missedLines > 0) {
 			ctx.sendMsg(user, "Heya. You've missed " + missedLines + " lines.");
 			
 			if(missedLines <= VERBATIM_THRESHOLD) {
-				List<LogLine> lines = DatabaseLogService.getMessagesSinceId(ctx.channel, lastId);
+				List<LogLine> lines = DatabaseLogServiceProvider.get().getMessagesSinceId(ctx.channel, lastId);
 				for(LogLine line : lines) {
 					ctx.sendMsg(user, "> " + line.user + ": " + line.message);
 				}

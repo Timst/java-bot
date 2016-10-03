@@ -4,7 +4,7 @@ import java.util.Date;
 
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.data.BotContext;
-import ch.arrg.javabot.log.DatabaseLogService;
+import ch.arrg.javabot.log.DatabaseLogServiceProvider;
 import ch.arrg.javabot.log.LogLine;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.HandlerUtils;
@@ -32,7 +32,7 @@ public class LastSeenHandler implements CommandHandler {
 	}
 	
 	private Date getLastSeenTime(String channel, String user) {
-		LogLine msg = DatabaseLogService.lastMessageByUser(channel, user);
+		LogLine msg = DatabaseLogServiceProvider.get().lastMessageByUser(channel, user);
 		if(msg != null) {
 			return msg.date;
 		}

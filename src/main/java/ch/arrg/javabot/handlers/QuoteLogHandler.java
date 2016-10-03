@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
-import ch.arrg.javabot.log.DatabaseLogService;
+import ch.arrg.javabot.log.DatabaseLogServiceProvider;
 import ch.arrg.javabot.log.LogLine;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.HandlerUtils;
@@ -43,7 +43,7 @@ public class QuoteLogHandler implements CommandHandler {
 	}
 	
 	private void quote(BotContext ctx, Integer lineId) {
-		LogLine line = DatabaseLogService.getById(ctx.channel, lineId);
+		LogLine line = DatabaseLogServiceProvider.get().getById(ctx.channel, lineId);
 		if(line == null) {
 			ctx.reply("Quote not found");
 		} else {
