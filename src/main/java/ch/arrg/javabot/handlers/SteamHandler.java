@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,41 +34,43 @@ import com.lukaspradel.steamapi.webapi.request.builders.SteamWebApiRequestFactor
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
+import ch.arrg.javabot.util.CachedResource;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.Logging;
 
 public class SteamHandler implements CommandHandler {
-	
+
 	// TODO make these configurable
 	private final static CountryCode STORE_COUNTRY = CountryCode.FR;
 	private final static String API_KEY = Const.str("SteamHandler.apiKey");
 	private final static String GAMES_LIST_URL = "http://api.steampowered.com/ISteamApps/GetAppList/v0001/";
-	
+
 	private final String[] confUsersNames = Const.strArray("SteamHandler.users");
 	private final String[] confUsersIds = Const.strArray("SteamHandler.ids");
-	
+
 	// TODO provide interface to steam64 IDs
-	private TreeMap<String, Integer> gamesIds = new TreeMap<>();
+	private CachedResource<TreeMap<String, Integer>> gamesIds;
 	private Map<String, String> steamers = new HashMap<String, String>();
-	
+
 	public SteamHandler() {
-		// TODO refresh cache once in a while
-		updateGamesList();
-		
+		gamesIds = CachedResource.make(() -> getGamesInfo(), 6, TimeUnit.HOURS);
+
 		for(int i = 0; i < confUsersNames.length; i++) {
 			steamers.put(confUsersNames[i], confUsersIds[i]);
 		}
 	}
-	
-	private void updateGamesList() {
+
+	private static TreeMap<String, Integer> getGamesInfo() {
+		TreeMap<String, Integer> out = new TreeMap<String, Integer>();
+
 		URL wikiRequest;
 		try {
 			wikiRequest = new URL(GAMES_LIST_URL);
 		} catch (MalformedURLException e) {
 			Logging.logException(e);
-			return;
+			return null;
 		}
-		
+
 		try (InputStream is = wikiRequest.openStream()) {
 			JSONObject gamesList = new JSONObject(new JSONTokener(is));
 			JSONArray apps = gamesList.getJSONObject("applist").getJSONObject("apps").getJSONArray("app");
@@ -75,42 +78,45 @@ public class SteamHandler implements CommandHandler {
 				JSONObject app = (JSONObject) oApp;
 				int appid = app.getInt("appid");
 				String name = app.getString("name");
-				gamesIds.put(name, appid);
+				out.put(name, appid);
 			}
-			
-			Logging.log("Read games list : " + gamesIds.size() + " games.");
+
+			Logging.log("Read games list : " + out.size() + " games.");
 		} catch (IOException e) {
 			Logging.logException(e);
 		} catch (Exception e) {
 			Logging.log("Couldn't read games list");
 			Logging.logException(e);
 		}
+
+		return out;
 	}
-	
+
 	private Entry<String, Integer> findGame(String name) {
-		if(gamesIds.containsKey(name)) {
-			return gamesIds.floorEntry(name);
+		TreeMap<String, Integer> gamesMap = gamesIds.get();
+		if(gamesMap.containsKey(name)) {
+			return gamesMap.floorEntry(name);
 		}
-		
-		for(Entry<String, Integer> e : gamesIds.entrySet()) {
+
+		for(Entry<String, Integer> e : gamesMap.entrySet()) {
 			if(e.getKey().toLowerCase().contains(name.toLowerCase())) {
 				return e;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	public void handle(BotContext ctx) {
 		CommandMatcher matcher = CommandMatcher.make("+steam");
-		
+
 		if(!matcher.matches(ctx.message)) {
 			return;
 		}
-		
+
 		String cmd = matcher.nextWord();
-		
+
 		if(cmd.equals("price")) {
 			handlePrice(ctx, matcher);
 		} else if(cmd.equals("owned") || cmd.equals("played")) {
@@ -119,37 +125,37 @@ public class SteamHandler implements CommandHandler {
 			help(ctx);
 		}
 	}
-	
+
 	private static class PlayedInfo implements Comparable<PlayedInfo> {
 		final int playedMin;
 		final String player;
-		
+
 		public PlayedInfo(String player, Integer playedMin) {
 			this.playedMin = (playedMin == null) ? -1 : playedMin;
 			this.player = player;
 		}
-		
+
 		@Override
 		public int compareTo(PlayedInfo o) {
 			return -Double.compare(playedMin, o.playedMin);
 		}
 	}
-	
+
 	private void handleOwned(BotContext ctx, CommandMatcher matcher) {
 		String gameName = matcher.remaining();
 		Entry<String, Integer> gameEntry = findGame(gameName);
-		
+
 		if(gameEntry == null) {
 			ctx.reply("Game not found.");
 			return;
 		}
-		
+
 		List<Integer> gamesList = Collections.singletonList(gameEntry.getValue());
 		List<PlayedInfo> played = new ArrayList<SteamHandler.PlayedInfo>();
 		try {
-			
+
 			SteamWebApiClient CLIENT = new SteamWebApiClient.SteamWebApiClientBuilder(API_KEY).build();
-			
+
 			for(Entry<String, String> e : steamers.entrySet()) {
 				GetOwnedGamesRequest request = SteamWebApiRequestFactory.createGetOwnedGamesRequest(e.getValue(), true,
 						true, gamesList);
@@ -166,12 +172,12 @@ public class SteamHandler implements CommandHandler {
 			Logging.logException(e);
 			ctx.reply("Couldn't read from Steam community API.");
 		}
-		
+
 		Collections.sort(played);
-		
+
 		StringBuilder sb = new StringBuilder();
 		for(PlayedInfo pi : played) {
-			
+
 			String time;
 			if(pi.playedMin == -1) {
 				time = "n.a.";
@@ -185,36 +191,36 @@ public class SteamHandler implements CommandHandler {
 					time = minutes + "m";
 				}
 			}
-			
+
 			sb.append(pi.player).append(": ").append(time).append(", ");
 		}
-		
+
 		String out = sb.toString().replaceAll(", $", "");
 		ctx.reply(out);
 	}
-	
+
 	private void handlePrice(BotContext ctx, CommandMatcher matcher) {
 		String gameName = matcher.remaining();
 		Entry<String, Integer> gameEntry = findGame(gameName);
-		
+
 		if(gameEntry == null) {
 			ctx.reply("Game not found.");
 			return;
 		}
-		
+
 		try {
 			SteamApi steamApi = SteamApiFactory.createSteamApi(STORE_COUNTRY);
 			SteamId steamId = SteamId.create(gameEntry.getValue());
 			SteamApp steamApp = steamApi.retrieveApp(steamId);
 			Price price = steamApp.getPrice();
-			
+
 			String currPrice = price.getFinalPrice().toPlainString();
 			String discount = "";
 			if(price.getDiscountPercent() != 0) {
 				discount = "(-" + price.getDiscountPercent() + "%) ";
 			}
 			String storeUrl = "http://store.steampowered.com/app/" + gameEntry.getValue();
-			
+
 			ctx.reply(gameEntry.getKey() + " is " + currPrice + " € " + discount + "(" + storeUrl + ")");
 			ctx.reply("Metacritic score: " + steamApp.getMetacriticScore() + " / 100.");
 			ctx.reply(cleanDescription(steamApp.getAboutTheGame()));
@@ -223,19 +229,18 @@ public class SteamHandler implements CommandHandler {
 			ctx.reply("Couldn't read from Steam storefront API.");
 		}
 	}
-	
+
 	private String cleanDescription(String aboutTheGame) {
 		return Jsoup.clean(aboutTheGame, Whitelist.none());
 	}
-	
+
 	@Override
 	public String getName() {
 		return "+steam";
 	}
-	
+
 	@Override
 	public void help(BotContext ctx) {
 		ctx.reply("Provides info from steam about game, prices, users, etc.");
 	}
-	
 }
