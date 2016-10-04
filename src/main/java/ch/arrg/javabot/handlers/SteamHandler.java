@@ -210,6 +210,7 @@ public class SteamHandler implements CommandHandler {
 		}
 
 		try {
+			// TODO split querying and rendering better
 			SteamApi steamApi = SteamApiFactory.createSteamApi(STORE_COUNTRY);
 			SteamId steamId = SteamId.create(gameEntry.getValue());
 			SteamApp steamApp = steamApi.retrieveApp(steamId);
@@ -230,12 +231,12 @@ public class SteamHandler implements CommandHandler {
 				Logging.logException(e);
 			}
 
+			String metacritic = "Metacritic score: " + steamApp.getMetacriticScore() + " / 100";
 			ctx.reply(gameEntry.getKey() + " is " + currPrice + " € " + discount + "(" + storeUrl + ")");
 			if(aksInfo != null) {
 				ctx.reply("Russian price: " + aksInfo.price + " (" + aksInfo.url + ")");
 			}
-			ctx.reply("Metacritic score: " + steamApp.getMetacriticScore() + " / 100.");
-			ctx.reply(cleanDescription(steamApp.getAboutTheGame()));
+			ctx.reply(metacritic + " — " + cleanDescription(steamApp.getAboutTheGame()));
 		} catch (SteamApiException e) {
 			Logging.logException(e);
 			ctx.reply("Couldn't read from Steam storefront API.");
