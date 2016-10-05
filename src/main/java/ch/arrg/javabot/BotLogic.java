@@ -1,31 +1,19 @@
 package ch.arrg.javabot;
 
+import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
+import org.apache.commons.io.FileUtils;
 
 import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.data.DataStoreUtils;
 import ch.arrg.javabot.data.UserData;
 import ch.arrg.javabot.data.UserDb;
 import ch.arrg.javabot.handlers.AdminHandler;
-import ch.arrg.javabot.handlers.CurrencyHandler;
-import ch.arrg.javabot.handlers.HelloHandler;
-import ch.arrg.javabot.handlers.JoinMissedLogHandler;
-import ch.arrg.javabot.handlers.LastSeenHandler;
-import ch.arrg.javabot.handlers.MarkovHandler;
-import ch.arrg.javabot.handlers.MemoHandler;
-import ch.arrg.javabot.handlers.QuoteLogHandler;
-import ch.arrg.javabot.handlers.RecordHandler;
-import ch.arrg.javabot.handlers.SteamHandler;
-import ch.arrg.javabot.handlers.SteamUrlHandler;
-import ch.arrg.javabot.handlers.TimeHandler;
-import ch.arrg.javabot.handlers.UrlTitleHandler;
-import ch.arrg.javabot.handlers.UserInfoHandler;
-import ch.arrg.javabot.handlers.YoutubeHandler;
-import ch.arrg.javabot.handlers.quiz.GuessWhoHandler;
-import ch.arrg.javabot.handlers.quiz.GuessWordHandler;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.Logging;
 
@@ -45,26 +33,33 @@ public class BotLogic {
 	private final UserDb userDb;
 	
 	public BotLogic() throws Exception {
-		addHandler(new HelloHandler());
-		addHandler(new TimeHandler());
-		addHandler(new RecordHandler());
-		addHandler(new UserInfoHandler());
-		addHandler(new GuessWhoHandler());
-		addHandler(new GuessWordHandler());
-		addHandler(new AdminHandler());
-		addHandler(new YoutubeHandler());
-		addHandler(new UrlTitleHandler());
-		addHandler(new SteamUrlHandler());
-		addHandler(new LastSeenHandler());
-		addHandler(new MarkovHandler());
-		addHandler(new SteamHandler());
-		addHandler(new MemoHandler());
-		addHandler(new QuoteLogHandler());
-		addHandler(new CurrencyHandler());
-		addHandler(new JoinMissedLogHandler());
+		List<String> classNames = FileUtils.readLines(new File(Const.str("handlers.file")));
+		
+		for(String className : classNames) {
+			instantiateHandler(className);
+		}
 		
 		userDb = DataStoreUtils.fromFile(Const.DATA_FILE);
 		DataStoreUtils.saveOnQuit(Const.DATA_FILE, userDb);
+	}
+	
+	private void instantiateHandler(String className) {
+		try {
+			Class<?> clazz = Class.forName(className);
+			Object newInstance = clazz.newInstance();
+			CommandHandler commandHandler = (CommandHandler) newInstance;
+			addHandler(commandHandler);
+			
+		} catch (ClassNotFoundException e) {
+			Logging.log("Couldn't not instantiate " + className + ": class not found.");
+			Logging.logException(e);
+		} catch (IllegalAccessException | InstantiationException e) {
+			Logging.log("Couldn't not instantiate " + className + ": failure on newInstance.");
+			Logging.logException(e);
+		} catch (ClassCastException e) {
+			Logging.log("Couldn't not instantiate " + className + ": it's not an instance of CommandHandler.");
+			Logging.logException(e);
+		}
 	}
 	
 	private void addHandler(CommandHandler h) {

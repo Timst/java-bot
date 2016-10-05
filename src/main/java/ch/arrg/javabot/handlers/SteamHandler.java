@@ -34,6 +34,7 @@ import com.lukaspradel.steamapi.webapi.request.builders.SteamWebApiRequestFactor
 import ch.arrg.javabot.CommandHandler;
 import ch.arrg.javabot.Const;
 import ch.arrg.javabot.data.BotContext;
+import ch.arrg.javabot.handlers.AksHandler.AksGameInfo;
 import ch.arrg.javabot.util.CachedResource;
 import ch.arrg.javabot.util.CommandMatcher;
 import ch.arrg.javabot.util.Logging;
@@ -53,7 +54,7 @@ public class SteamHandler implements CommandHandler {
 	private Map<String, String> steamers = new HashMap<String, String>();
 	
 	public SteamHandler() {
-		gamesIds = CachedResource.make(() -> getGamesInfo(), 6, TimeUnit.HOURS);
+		gamesIds = CachedResource.make(SteamHandler::getGamesInfo, 6, TimeUnit.HOURS);
 		
 		for(int i = 0; i < confUsersNames.length; i++) {
 			steamers.put(confUsersNames[i], confUsersIds[i]);
@@ -208,26 +209,58 @@ public class SteamHandler implements CommandHandler {
 			return;
 		}
 		
+		SteamApp steamApp = getSteamInfo(gameEntry);
+		if(steamApp == null) {
+			ctx.reply("Couldn't read from Steam storefront API.");
+			return;
+		}
+		
+		AksGameInfo aksInfo = null;
+		try {
+			aksInfo = AksHandler.getGameInfo(gameName);
+		} catch (IOException e) {
+			Logging.log("Couldn't get AKS info");
+			Logging.logException(e);
+		}
+		
+		reply(ctx, steamApp, aksInfo);
+	}
+	
+	private void reply(BotContext ctx, SteamApp steamApp, AksGameInfo aksInfo) {
+
+		Price price = steamApp.getPrice();
+		String currPrice = price.getFinalPrice().toPlainString();
+		String discount = "";
+		if(price.getDiscountPercent() != 0) {
+			discount = "(-" + price.getDiscountPercent() + "%) ";
+		}
+		
+		String storeUrl = "http://store.steampowered.com/app/" + steamApp.getAppId();
+		
+		// Output
+		ctx.reply(steamApp.getName() + " is " + currPrice + " € " + discount + "(" + storeUrl + ")");
+		if(aksInfo != null) {
+			ctx.reply("Russian price: " + aksInfo.price + " (" + aksInfo.url + ")");
+		}
+		
+		String metacritic = "";
+		if(steamApp.getMetacriticScore() != null) {
+			metacritic = "Metacritic score: " + steamApp.getMetacriticScore() + " / 100" + " — ";
+		}
+		ctx.reply(metacritic + cleanDescription(steamApp.getAboutTheGame()));
+	}
+	
+	private SteamApp getSteamInfo(Entry<String, Integer> gameEntry) {
 		try {
 			SteamApi steamApi = SteamApiFactory.createSteamApi(STORE_COUNTRY);
 			SteamId steamId = SteamId.create(gameEntry.getValue());
 			SteamApp steamApp = steamApi.retrieveApp(steamId);
-			Price price = steamApp.getPrice();
-			
-			String currPrice = price.getFinalPrice().toPlainString();
-			String discount = "";
-			if(price.getDiscountPercent() != 0) {
-				discount = "(-" + price.getDiscountPercent() + "%) ";
-			}
-			String storeUrl = "http://store.steampowered.com/app/" + gameEntry.getValue();
-			
-			ctx.reply(gameEntry.getKey() + " is " + currPrice + " € " + discount + "(" + storeUrl + ")");
-			ctx.reply("Metacritic score: " + steamApp.getMetacriticScore() + " / 100.");
-			ctx.reply(cleanDescription(steamApp.getAboutTheGame()));
+			return steamApp;
 		} catch (SteamApiException e) {
 			Logging.logException(e);
-			ctx.reply("Couldn't read from Steam storefront API.");
+			return null;
 		}
+		
 	}
 	
 	private static String cleanDescription(String aboutTheGame) {
