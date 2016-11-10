@@ -9,8 +9,8 @@ import ch.arrg.javabot.util.HtmlReaderHelper;
 
 public class UrlTitleHandler implements CommandHandler {
 
-	private final static String URL_REGEX = "(https?://\\S+)\\s?";
-	private final static Pattern URL_PAT = Pattern.compile(URL_REGEX);
+	private final static Pattern URL_PAT = Pattern.compile("(https?://\\S+)\\s?");
+	private final static Pattern SHORT_CMD = Pattern.compile("\\+t\\b");
 
 	private String lastUrl = null;
 
@@ -18,9 +18,18 @@ public class UrlTitleHandler implements CommandHandler {
 	public void handle(BotContext ctx) {
 		String m = ctx.message;
 
-		findUrlInMessage(m);
-
-		if(lastUrl != null && m.matches("\\+t\\b") || m.contains("+linktitle")) {
+		boolean printUrlNow = false;
+		String url = findUrlInMessage(m);
+		if(url != null) {
+			lastUrl = url;
+			
+			Matcher matcher = SHORT_CMD.matcher(m);
+			if(matcher.find()) {
+				printUrlNow = true;
+			}
+		}
+		
+		if(lastUrl != null && (printUrlNow || m.startsWith("+linktitle"))) {
 			handleUrl(ctx, lastUrl);
 		}
 	}
@@ -34,11 +43,11 @@ public class UrlTitleHandler implements CommandHandler {
 		}
 	}
 
-	private String findUrlInMessage(String m) {
+	private static String findUrlInMessage(String m) {
 		if(m.contains("http") && m.contains("://")) {
 			Matcher matcher = URL_PAT.matcher(m);
 			if(matcher.find()) {
-				lastUrl = matcher.group(1);
+				return matcher.group(1);
 			}
 		}
 
