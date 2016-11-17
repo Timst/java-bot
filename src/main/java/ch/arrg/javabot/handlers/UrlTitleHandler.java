@@ -14,6 +14,8 @@ public class UrlTitleHandler implements CommandHandler {
 
 	private String lastUrl = null;
 
+	private boolean alwaysReadTitles = true;
+	
 	@Override
 	public void handle(BotContext ctx) {
 		String m = ctx.message;
@@ -22,6 +24,10 @@ public class UrlTitleHandler implements CommandHandler {
 		String url = findUrlInMessage(m);
 		if(url != null) {
 			lastUrl = url;
+			
+			if(alwaysReadTitles) {
+				printUrlNow = true;
+			}
 			
 			Matcher matcher = SHORT_CMD.matcher(m);
 			if(matcher.find()) {
@@ -38,7 +44,7 @@ public class UrlTitleHandler implements CommandHandler {
 		if(url != null) {
 			String title = HtmlReaderHelper.readTitle(url);
 			if(title != null) {
-				ctx.reply("Link title: \"" + title + "\"");
+				ctx.reply("Link: \"" + title + "\"");
 			}
 		}
 	}
