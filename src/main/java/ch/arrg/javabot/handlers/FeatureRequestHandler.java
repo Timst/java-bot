@@ -13,16 +13,16 @@ import ch.arrg.javabot.data.BotContext;
 import ch.arrg.javabot.util.CommandMatcher;
 
 public class FeatureRequestHandler implements CommandHandler {
-
+	
 	private static final String DATA_KEY = "FeatureRequestHandler";
-
+	
 	@Override
 	public void handle(BotContext ctx) {
-
+		
 		CommandMatcher matcher = CommandMatcher.make("+feature");
 		if(matcher.matches(ctx.message)) {
 			String command = matcher.peekWord();
-
+			
 			if("rm".equals(command)) {
 				// Consume the 'rm'
 				matcher.nextWord();
@@ -36,16 +36,20 @@ public class FeatureRequestHandler implements CommandHandler {
 				ctx.reply("Your feedback is important to us");
 			}
 		}
-
+		
 	}
-
+	
 	private void showFeatureRequests(BotContext ctx) {
 		Map<String, FeatureRequest> frs = getFeatureRequests(ctx);
+		if(frs.isEmpty()) {
+			ctx.reply("No feature requests.");
+		}
+
 		for(Entry<String, FeatureRequest> e : frs.entrySet()) {
 			ctx.reply(e.getKey() + ": " + e.getValue().msg);
 		}
 	}
-
+	
 	private void removeMessage(BotContext ctx, String id) {
 		Map<String, FeatureRequest> frs = getFeatureRequests(ctx);
 		FeatureRequest fr = frs.remove(id);
@@ -55,7 +59,7 @@ public class FeatureRequestHandler implements CommandHandler {
 			ctx.reply("No such ID");
 		}
 	}
-
+	
 	private static void storeMessage(BotContext ctx, FeatureRequest msg) {
 		// TODO this uses a fake user to store data. We should have a mechanism
 		// to store global data
@@ -63,23 +67,23 @@ public class FeatureRequestHandler implements CommandHandler {
 		String key = getId(msg);
 		frs.put(key, msg);
 	}
-
+	
 	private static String getId(FeatureRequest msg) {
 		DateFormat df = new SimpleDateFormat("yyMMdd-hhmmss");
 		return df.format(msg.when);
 	}
-
+	
 	private static Map<String, FeatureRequest> getFeatureRequests(BotContext ctx) {
 		Map<String, FeatureRequest> frs = ctx.getUserData(DATA_KEY).getOrInit(DATA_KEY,
 				new HashMap<String, FeatureRequest>());
 		return frs;
 	}
-
+	
 	static class FeatureRequest implements Serializable {
 		private final String from;
 		private final Date when;
 		private final String msg;
-
+		
 		public FeatureRequest(String from, Date when, String msg) {
 			super();
 			this.from = from;
@@ -87,12 +91,12 @@ public class FeatureRequestHandler implements CommandHandler {
 			this.msg = msg;
 		}
 	}
-
+	
 	@Override
 	public String getName() {
 		return "+feature";
 	}
-
+	
 	@Override
 	public void help(BotContext ctx) {
 		ctx.reply("Store feature requests.");
