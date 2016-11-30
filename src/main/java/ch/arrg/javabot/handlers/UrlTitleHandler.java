@@ -14,29 +14,34 @@ public class UrlTitleHandler implements CommandHandler {
 
 	private String lastUrl = null;
 
+	// TODO make this a runtime setting
 	private boolean alwaysReadTitles = true;
-	
+
 	@Override
 	public void handle(BotContext ctx) {
 		String m = ctx.message;
 
-		boolean printUrlNow = false;
+		boolean hasUrlNow = false;
 		String url = findUrlInMessage(m);
 		if(url != null) {
 			lastUrl = url;
-			
-			if(alwaysReadTitles) {
-				printUrlNow = true;
-			}
-			
+			hasUrlNow = true;
+		}
+
+		if(m.startsWith("+linktitle") && lastUrl != null) {
+			handleUrl(ctx, lastUrl);
+		} else if(hasUrlNow) {
+
+			boolean hasShortMatch = false;
 			Matcher matcher = SHORT_CMD.matcher(m);
 			if(matcher.find()) {
-				printUrlNow = true;
+				hasShortMatch = true;
 			}
-		}
-		
-		if(lastUrl != null && (printUrlNow || m.startsWith("+linktitle"))) {
-			handleUrl(ctx, lastUrl);
+
+			// Print now if : always on XOR hasShortMatch
+			if(alwaysReadTitles ^ hasShortMatch) {
+				handleUrl(ctx, lastUrl);
+			}
 		}
 	}
 
