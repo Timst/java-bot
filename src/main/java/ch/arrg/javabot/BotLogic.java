@@ -81,6 +81,10 @@ public class BotLogic {
 		
 		String message = ctx.message.trim();
 		
+		if(message.startsWith(Const.str("bot.ignoredPattern"))) {
+			return;
+		}
+		
 		CommandMatcher matcher = CommandMatcher.make("+help");
 		if(matcher.matches(message)) {
 			onHelp(ctx, matcher.nextWord());
