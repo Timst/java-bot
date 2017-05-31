@@ -1,5 +1,6 @@
 package ch.arrg.javabot.handlers;
 
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +18,7 @@ import ch.arrg.javabot.util.Logging;
 public class MarkovHandler implements CommandHandler {
 	
 	// Cache of models by user
-	private Map<String, MarkovModel> modelsByUser = new HashMap<>();
+	private Map<String, SoftReference<MarkovModel>> modelsByUser = new HashMap<>();
 	private static final int MODEL_DEPTH = 2;
 	
 	@Override
@@ -29,17 +30,27 @@ public class MarkovHandler implements CommandHandler {
 			String userCanon = UserDb.canonize(user);
 			String begin = matcher.remaining();
 			
-			if(!modelsByUser.containsKey(userCanon)) {
+			// Need to check for nullness of the reference (as it may have been
+			// collected)
+			if(!modelsByUser.containsKey(userCanon) || modelsByUser.get(userCanon).get() == null) {
 				ctx.reply("(building markov model, this might take a while)");
 				MarkovModel model = ModelBuilder.buildModel(MODEL_DEPTH, userCanon);
 				stats(ctx, model);
-				modelsByUser.put(userCanon, model);
+				modelsByUser.put(userCanon, new SoftReference<MarkovModel>(model));
 			}
 			
 			String sentence = "";
 			int tries = 10;
 			do {
-				sentence = modelsByUser.get(userCanon).predict(begin);
+				MarkovModel ref = modelsByUser.get(userCanon).get();
+				if(ref == null) {
+					// Reference expired, model needs to be rebuilt, but here we
+					// just ignore
+					ctx.reply("Sorry, try again in a minute.");
+					return;
+				}
+
+				sentence = ref.predict(begin);
 				if(sentence == null || sentence.equals("") || sentence.equals(begin + " ")) {
 					sentence = null;
 					break;
@@ -295,7 +306,8 @@ public class MarkovHandler implements CommandHandler {
 			return words[from + len - 1];
 		}
 		
-		/** Tuple equality. Tuples are equal if the words of the tuple are equal,
+		/** Tuple equality. Tuples are equal if the words of the tuple are
+		 * equal,
 		 * independently of
 		 * the backing array and from index. */
 		@Override
