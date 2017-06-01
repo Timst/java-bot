@@ -14,46 +14,46 @@ import ch.arrg.javabot.util.HtmlReaderHelper;
 import ch.arrg.javabot.util.Logging;
 
 public class CurrencyHandler implements CommandHandler {
-	
+
 	private final static String[] CURRENCIES = Const.strArray("CurrencyHandler.allowedCurrencies");
-	
+
 	private final static String NUM_REGEX = "(\\d+([.,]\\d+)?)";
 	private final static String TARGET_CURRENCY = "EUR";
-	
+
 	private static List<Pattern> PREFIX = new ArrayList<>();
 	private static List<Pattern> SUFFIX = new ArrayList<>();
-	
+
 	static {
 		makePatterns();
 	}
-	
+
 	private static void makePatterns() {
 		for(String curr : CURRENCIES) {
 			String wb = needsWordBoundaries(curr) ? "\\b" : "";
-			
+
 			String currWithParen = "(" + Pattern.quote(curr) + ")";
 			String regexPrefix = wb + currWithParen + " ?" + NUM_REGEX + wb;
 			String regexSuffix = wb + NUM_REGEX + " ?" + currWithParen + wb;
-			
+
 			PREFIX.add(Pattern.compile(regexPrefix));
 			SUFFIX.add(Pattern.compile(regexSuffix));
 		}
 	}
-	
+
 	/** letter patterns need word boundaries so that for instance "I want 3
 	 * nokia phones" doesn't get matched as a currency. */
 	private static boolean needsWordBoundaries(String curr) {
 		return curr.matches("\\w+");
 	}
-
+	
 	@Override
 	public void handle(BotContext ctx) {
 		String m = ctx.message;
-		
+
 		match(ctx, PREFIX, m, true);
 		match(ctx, SUFFIX, m, false);
 	}
-	
+
 	private void match(BotContext ctx, List<Pattern> pats, String msg, boolean isPrefix) {
 		for(Pattern p : pats) {
 			Matcher matcher = p.matcher(msg.toUpperCase());
@@ -66,7 +66,7 @@ public class CurrencyHandler implements CommandHandler {
 			}
 		}
 	}
-	
+
 	private void onMatch(BotContext ctx, String currencyS, String amountS) {
 		try {
 			String currency = normalizeCurrency(currencyS);
@@ -81,16 +81,16 @@ public class CurrencyHandler implements CommandHandler {
 			Logging.logException(e);
 		}
 	}
-	
+
 	private Double getRate(String currency) {
 		String req = "http://api.fixer.io/latest?symbols=" + currency;
 		// {"base":"EUR","date":"2016-07-21","rates":{"NOK":9.3541}}
-		
+
 		Pattern pat = Pattern.compile("\\{\"" + currency + "\":(\\d+(\\.\\d+)?)\\}");
-		
+
 		try (BufferedReader in = HtmlReaderHelper.openUrlForRead(req)) {
 			String inputLine;
-			
+
 			while((inputLine = in.readLine()) != null) {
 				Matcher matcher = pat.matcher(inputLine);
 				if(matcher.find()) {
@@ -100,26 +100,28 @@ public class CurrencyHandler implements CommandHandler {
 		} catch (IOException e) {
 			Logging.logException(e);
 		}
-		
+
 		return null;
 	}
-	
+
 	private String normalizeCurrency(String currency) {
 		if(currency.equals("$"))
 			return "USD";
+		if(currency.equals("A$"))
+			return "AUD";
 		if(currency.equals("£"))
 			return "GBP";
 		return currency;
 	}
-	
+
 	@Override
 	public String getName() {
 		return "currency";
 	}
-	
+
 	@Override
 	public void help(BotContext ctx) {
 		ctx.reply("Automatically converts currencies to €.");
 	}
-	
+
 }
