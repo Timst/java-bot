@@ -17,7 +17,7 @@ public class CurrencyHandler implements CommandHandler {
 
 	private final static String[] CURRENCIES = Const.strArray("CurrencyHandler.allowedCurrencies");
 
-	private final static String NUM_REGEX = "(\\d+([.,]\\d+)?)";
+	private final static String NUM_REGEX = "([\\d ]*([.,][\\d ]*)?)";
 	private final static String TARGET_CURRENCY = "EUR";
 
 	private static List<Pattern> PREFIX = new ArrayList<>();
@@ -55,31 +55,56 @@ public class CurrencyHandler implements CommandHandler {
 	}
 
 	private void match(BotContext ctx, List<Pattern> pats, String msg, boolean isPrefix) {
+		boolean foundIt = false;
 		for(Pattern p : pats) {
 			Matcher matcher = p.matcher(msg.toUpperCase());
 			if(matcher.find()) {
 				if(isPrefix) {
-					onMatch(ctx, matcher.group(1), matcher.group(2));
+					foundIt = onMatch(ctx, matcher.group(1), matcher.group(2));
 				} else {
-					onMatch(ctx, matcher.group(3), matcher.group(1));
+					foundIt = onMatch(ctx, matcher.group(3), matcher.group(1));
 				}
+				
+				if(foundIt) break;
 			}
 		}
 	}
 
-	private void onMatch(BotContext ctx, String currencyS, String amountS) {
+	private boolean onMatch(BotContext ctx, String currencyS, String amountS) {
 		try {
 			String currency = normalizeCurrency(currencyS);
-			double amount = Double.parseDouble(amountS);
+			amountS = cleanupNumber(amountS);
+			double amount = Double.parseDouble(amountS.replace(" ", ""));
 			Double rate = getRate(currency);
 			if(rate != null) {
 				double amountEuro = amount / rate;
 				String amountEuroS = String.format("%.2f", amountEuro);
 				ctx.reply("(" + amountS + " " + currencyS + " = " + amountEuroS + " " + TARGET_CURRENCY + ")");
+				return true;
 			}
 		} catch (NumberFormatException e) {
 			Logging.logException(e);
 		}
+		
+		return false;
+	}
+	
+	private String cleanupNumber(String number) {
+		number = number.replace(" ", "");
+		number = number.replace(',', '.');
+		
+		//Remove trailing zeroes in decimals
+		if(number.contains(".")) {
+			for(int i = number.length()-1; i>= 0; i--) {
+				if(number.charAt(i) == '0') {
+					number = number.substring(0, i);
+				} else {
+					break;
+				}
+			}
+		}
+
+		return number;
 	}
 
 	private Double getRate(String currency) {
@@ -104,11 +129,11 @@ public class CurrencyHandler implements CommandHandler {
 		return null;
 	}
 
-	private String normalizeCurrency(String currency) {
-		if(currency.equals("$"))
-			return "USD";
+	private String normalizeCurrency(String currency) {	
 		if(currency.equals("A$"))
 			return "AUD";
+		if(currency.equals("$"))
+			return "USD";
 		if(currency.equals("£"))
 			return "GBP";
 		return currency;
